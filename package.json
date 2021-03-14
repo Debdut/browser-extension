@@ -4,7 +4,6 @@
   "description": "Preact Chrome Extension Boilerplate",
   "scripts": {
     "test": "mocha",
-    "start:background": "webpack serve --open --config webpack/dev/background.js",
     "start:popup": "webpack serve --open --config webpack/dev/popup.js",
     "start:content": "webpack serve --open --config webpack/dev/content.js"
   },

@@ -10,16 +10,5 @@ const SOURCE = path.resolve(ROOT, 'src', 'popup')
 module.exports = merge(preactConfig, {
   entry: {
     background: path.resolve(SOURCE, 'index.js')
-  },
-  output: {
-    filename: 'index.[contenthash].js',
-    path: path.resolve(ROOT, 'dist', 'popup'),
-    clean: true
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: 'Popup',
-      template: path.resolve(SOURCE, 'index.html')
-    }),
-  ]
+  }
 })

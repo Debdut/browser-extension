@@ -10,6 +10,11 @@ const DEST = path.resolve(ROOT, 'dist', 'content')
 
 module.exports = merge(common, {
   mode: 'development',
+  output: {
+    filename: 'index.[contenthash].js',
+    path: DEST,
+    clean: true
+  },
   devtool: 'inline-source-map',
   devServer: {
     contentBase: DEST
