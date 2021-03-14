@@ -30,7 +30,9 @@ A Full Feature Preact Chrome Extension Boilerplate 🎁
 ## 👩🏻‍🏫 Instructions
 
 🥇 Content Scripts, Popup and Options Page support Preact
+
 🥈 You can choose to not use preact in any of these, just remove the preact imports
+
 🥉 Comment out any of Background, Content Scripts, Options and Popup in `webpack.config.js` to stop generating it
 
 ## Browsers
