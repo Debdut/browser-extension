@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Preact Chrome Extension",
+  "description": "A Full Feature Preact Chrome Extension",
+  "author": "Debdut Karmakar",
+  "version": "1.0.0",
+  "default_locale": "en",
+
+  "action": {},
+  "commands": {},
+
+  "icons": {},
+
+  "permissions": {},
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+
+  "web_accessible_resources": [{
+    "resources": ["assets/*"]
+  }],
+
+  "options_page": "options.html",
+  "options_ui": {
+    "chrome_style": true,
+    "page": "options.html"
+  }
+}
