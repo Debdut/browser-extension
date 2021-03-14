@@ -1,7 +1,9 @@
-console.log('[Popup] Loaded')
+console.log('[Content] Loaded')
 
 import { h, render } from 'preact'
 import App from './components/app'
 import './index.scss'
 
-render(<App />, document.body)
+const contentHolder = document.createElement('div')
+document.body.appendChild(contentHolder)
+render(<App />, contentHolder)
