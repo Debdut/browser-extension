@@ -7,7 +7,7 @@ module.exports = {
     background: path.resolve(ROOT, 'src', 'background', 'index.js')
   },
   output: {
-    filename: '[name].js',
-    path: path.resolve(ROOT, 'dist')
+    filename: 'index.js',
+    path: path.resolve(ROOT, 'dist', 'background')
   }
 }

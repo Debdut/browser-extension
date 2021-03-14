@@ -9,6 +9,6 @@ module.exports = merge(common, {
   mode: 'development',
   devtool: 'inline-source-map',
   devServer: {
-    contentBase: path.resolve(ROOT, 'dist')
+    contentBase: path.resolve(ROOT, 'dist', 'background')
   }
 })
