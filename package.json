@@ -5,7 +5,9 @@
   "scripts": {
     "test": "mocha",
     "start:popup": "webpack serve --open --config webpack/dev/popup.js",
-    "start:content": "webpack serve --open --config webpack/dev/content.js"
+    "start:content": "webpack serve --open --config webpack/dev/content.js",
+    "start": "webpack --watch",
+    "build": "webpack"
   },
   "author": "Debdut Karmakar <iawaiponly@gmail.com>",
   "license": "ISC",
