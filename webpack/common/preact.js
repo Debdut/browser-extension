@@ -15,12 +15,17 @@ module.exports = {
         }
       },
       {
-        test: /\.scss$/i,
+        test: /\.(scss|pcss|css)$/i,
         use: [
           'style-loader',
-          'css-loader',
-          'resolve-url-loader',
-          'sass-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1
+            }
+          },
+          'postcss-loader',
+          'sass-loader'
         ],
       },
     ]
