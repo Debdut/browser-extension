@@ -5,14 +5,30 @@
   "scripts": {
     "test": "mocha",
     "build:background": "webpack --config webpack/prod/background.js",
-    "start:background": "webpack serve --open --config webpack/dev/background.js"
+    "start:background": "webpack serve --open --config webpack/dev/background.js",
+    "build:popup": "webpack --config webpack/prod/popup.js",
+    "start:popup": "webpack serve --open --config webpack/dev/popup.js"
   },
   "author": "Debdut Karmakar <iawaiponly@gmail.com>",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/plugin-transform-react-jsx": "^7.12.17",
+    "@babel/preset-env": "^7.13.10",
+    "babel": "^6.23.0",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.1.2",
+    "html-webpack-plugin": "^5.3.1",
+    "node-sass": "^5.0.0",
+    "resolve-url-loader": "^3.1.2",
+    "sass-loader": "^11.0.1",
+    "style-loader": "^2.0.0",
     "webpack": "^5.25.0",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"
+  },
+  "dependencies": {
+    "preact": "^10.5.12"
   }
 }
