@@ -17,7 +17,10 @@ module.exports = merge(common, {
   },
   devtool: 'inline-source-map',
   devServer: {
-    contentBase: DEST
+    contentBase: DEST,
+    hot: true,
+    injectHot: true,
+    compress: true
   },
   plugins: [
     new HtmlWebpackPlugin({
