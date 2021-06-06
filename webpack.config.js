@@ -1,11 +1,9 @@
-const Popup = require('./webpack/prod/popup')
-const Option = require('./webpack/prod/option')
-const Content = require('./webpack/prod/content')
-const Background = require('./webpack/prod/background')
+const chrome = require('./webpack/chrome');
+const firefox = require('./webpack/firefox');
+const safari = require('./webpack/safari');
 
 module.exports = [
-  Popup,
-  Option,
-  Content,
-  Background
-]
+  chrome,
+  firefox,
+  safari
+];
