@@ -18,6 +18,8 @@
 - React 17
 - Typescript
 - PostCSS
+- GraphQL
+- JSON Imports
 - Sass
 - Webpack 5
 
