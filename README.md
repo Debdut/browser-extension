@@ -6,6 +6,7 @@
 
 ## 🏡 Builtin
 
+- All Browsers Support
 - Manifest V2
 - Content Scripts
 - Background Worker
