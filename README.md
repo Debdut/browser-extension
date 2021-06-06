@@ -2,7 +2,7 @@
 
 ![Generic badge](https://img.shields.io/badge/build-success-brightgreen.svg) ![Generic badge](https://img.shields.io/badge/tests-100%25-brightgreen.svg)
 
-> _A Out of the Box 🎁 Browser Extension Template with support for Preact, React, Typescript _
+> A Out of the Box 🎁 Browser Extension Template with support for Preact, React, Typescript
 
 ## 🏡 Builtin
 
