@@ -1,6 +1,6 @@
 # Browser Extension Template w/ Preact Typescript [![Generic badge](https://img.shields.io/twitter/follow/KarmakarDebdut?style=social)](https://twitter.com/KarmakarDebdut)
 
-![Generic badge](https://img.shields.io/badge/build-success-brightgreen.svg) ![Generic badge](https://img.shields.io/badge/tests-100%25-brightgreen.svg)
+![Generic badge](https://img.shields.io/badge/build-success-brightgreen.svg)
 
 > A Out of the Box 🎁 Browser Extension Template with support for Preact, React, Typescript
 
@@ -32,11 +32,17 @@ Simply remove or don't use the technologies you don't like.
 
 🥈 You can choose to not use preact in any of these, just remove the preact imports
 
-🥉 React, Preact, Typescript or PostCSS are all optional -- for react builds
+🥉 React, Preact, Typescript or PostCSS are all optional
+
+For react builds
 
 - `npm install react`
 - Delete this line `"jsxImportSource": "preact"` in `tsconfig.json`
 - Change preact imports to react
+
+For TS
+
+- Just change js to ts and jsx to tsx
 
 ## Commands
 
