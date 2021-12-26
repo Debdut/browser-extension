@@ -34,8 +34,14 @@ Simply remove or don't use the technologies you don't like.
 
 🥉 React, Preact, Typescript or PostCSS are all optional
 
+For Disabling TS
+
+- Just change file extensions ts to js and tsx to jsx
+- Change all ts to js and tsx to jsx in `webpack/base.js`
+
 For Preact builds
 
+- Disable TS using instructions above
 - `npm install preact`
 - Enable `{ "pragma":"h" }` in `webpack/base.js`
 - Enable `"jsxImportSource": "preact"` in `tsconfig.json`
@@ -48,9 +54,6 @@ import React from 'react'
 import { h, render } from 'preact'
 ```
 
-For TS
-
-- Just change js to ts and jsx to tsx
 
 ## Commands
 
