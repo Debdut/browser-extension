@@ -28,7 +28,7 @@ const Option = join(Source, 'option');
 const config = {
   mode: process.env.NODE_ENV,
   target: 'web',
-  devtool: isProd ? 'none' : 'eval-cheap-module-source-map',
+  devtool: isProd ? 'none' : 'cheap-source-map',
   entry: {
     background: join(Background, 'index.js'),
     popup: join(Popup, 'index.jsx'),
