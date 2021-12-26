@@ -7,7 +7,7 @@
 ## 🏡 Builtin
 
 - All Browsers Support
-- Manifest V2
+- Manifest V3
 - Content Scripts
 - Background Worker
 - Popup
