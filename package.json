@@ -1,5 +1,5 @@
 {
-  "name": "preact-chrome-extension",
+  "name": "browser-extension",
   "version": "1.0.0",
   "description": "Browser Extension Boilerplate",
   "scripts": {
