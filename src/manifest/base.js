@@ -1,43 +1,35 @@
 const { version } = require('./version.json');
+const permissions = require('./permissions');
+const { name, short_name, description } = require('./app_info');
 
 module.exports = {
   version,
-  manifest_version: 2,
-  name: "Browser Extension",
-  short_name: "A Default Template",
-  description: "A Default Template",
-  permissions: [
-    "storage",
-    "unlimitedStorage",
-    "tabs",
-    "activeTab",
-    "identity", 
-    "alarms",
-    "https://*/*",
-    "windows",
-    "contextMenus"
-  ],
-  browser_action: {
-    "default_title": "Browser Extension",
-    "default_popup": "assets/html/popup.html"
+  manifest_version: 3,
+  name,
+  short_name,
+  description,
+  permissions,
+  host_permissions: ["<all_urls>"],
+  action: {
+    default_title: name,
+    default_popup: "assets/html/popup.html",
+    default_icon: "assets/images/logo.png"
   },
-  "content_scripts": [
+  content_scripts: [
     {
-      "matches": ["<all_urls>"],
-      // "css": ["myStyles.css"],
-      "js": ["content.js"]
+      matches: ["<all_urls>"],
+      // css: ["styles.css"],
+      js: ["content.js"]
     }
   ],
   icons: {
     "128": "assets/images/logo.png"
   },
   background: {
-    "scripts": ["background.js"]
+    service_worker: "background.js"
   },
-  web_accessible_resources: [
-    "assets/**"
-  ],
-  // ...(process.env.NODE_ENV === 'development' ? {
-  //   content_security_policy: "script-src 'self' 'unsafe-eval'; font-src 'self' data: https://fonts.gstatic.com/s/dmsans; object-src 'self';"
-  // } : {})
+  web_accessible_resources: [{
+    resources: ["assets/**"],
+    matches: ["<all_urls>"]
+  }]
 };
