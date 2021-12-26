@@ -82,7 +82,7 @@ npm run clean
 ## Browser Support
 
 - [x] Chrome
-- [] Firefox
-- [] Opera (Chrome Build)
-- [] Edge (Chrome  Build)
-- [] Safari
+- [ ] Firefox
+- [ ] Opera (Chrome Build)
+- [ ] Edge (Chrome  Build)
+- [ ] Safari
