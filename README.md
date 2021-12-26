@@ -1,4 +1,5 @@
-# Browser Extension Template w/ Preact Typescript [![Generic badge](https://img.shields.io/twitter/follow/KarmakarDebdut?style=social)](https://twitter.com/KarmakarDebdut)
+# Browser Extension Template [![Generic badge](https://img.shields.io/twitter/follow/KarmakarDebdut?style=social)](https://twitter.com/KarmakarDebdut)
+## w/ React Preact Typescript 
 
 ![Generic badge](https://img.shields.io/badge/build-success-brightgreen.svg)
 
