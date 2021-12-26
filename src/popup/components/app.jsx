@@ -1,9 +1,7 @@
-import { h, Component } from 'preact'
+import React from 'react'
 
-class App extends Component {
-    render() {
-        return <div id="app-root"><h1>Preact Chrome Extension Starter</h1></div>
-    }
+const App = () => {
+  return <div id="app-root"><h1>Browser Extension - Popup</h1></div>
 }
 
 export default App

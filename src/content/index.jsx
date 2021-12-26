@@ -1,6 +1,7 @@
 console.log('[Content] Loaded')
 
-import { h, render } from 'preact'
+import React from 'react'
+import { render } from 'react-dom'
 import App from './components/app'
 import './index.scss'
 

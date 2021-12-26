@@ -15,9 +15,9 @@
 
 ## 🎗 Supports
 
-- Preact X
 - React 17
 - Typescript
+- Preact X
 - PostCSS
 - GraphQL
 - JSON Imports
