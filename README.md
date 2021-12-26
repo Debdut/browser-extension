@@ -2,7 +2,7 @@
 
 ![Generic badge](https://img.shields.io/badge/build-success-brightgreen.svg)
 
-> A Out of the Box 🎁 Browser Extension Template with support for Preact, React, Typescript and Manifest V3
+> A Out of the Box 🎁 Browser Extension Template with support for React, Preact, Typescript and Manifest V3
 
 ## 🏡 Builtin
 
@@ -34,10 +34,11 @@ Simply remove or don't use the technologies you don't like.
 
 🥉 React, Preact, Typescript or PostCSS are all optional
 
-For react builds
+For Preact builds
 
-- `npm install react`
-- Delete this line `"jsxImportSource": "preact"` in `tsconfig.json`
+- `npm install preact`
+- Enable `{ "pragma":"h" }` in `webpack/base.js`
+- Enable `"jsxImportSource": "preact"` in `tsconfig.json`
 - Change preact imports to react
 
 For TS
@@ -74,7 +75,7 @@ npm run clean
 ## Browser Support
 
 - [x] Chrome
-- [x] Firefox
-- [x] Opera (Chrome Build)
-- [x] Edge (Chrome  Build)
-- [x] Safari
+- [] Firefox
+- [] Opera (Chrome Build)
+- [] Edge (Chrome  Build)
+- [] Safari
