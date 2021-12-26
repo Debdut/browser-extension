@@ -6,7 +6,6 @@
 
 ## 🏡 Builtin
 
-- All Browsers Support
 - Manifest V3
 - Content Scripts
 - Background Worker
@@ -83,6 +82,6 @@ npm run clean
 
 - [x] Chrome
 - [ ] Firefox
-- [ ] Opera (Chrome Build)
-- [ ] Edge (Chrome  Build)
+- [x] Opera (Chrome Build)
+- [x] Edge (Chrome  Build)
 - [ ] Safari
