@@ -39,7 +39,14 @@ For Preact builds
 - `npm install preact`
 - Enable `{ "pragma":"h" }` in `webpack/base.js`
 - Enable `"jsxImportSource": "preact"` in `tsconfig.json`
-- Change preact imports to react
+- Change react imports to preact
+
+```js
+import { render } from 'react-dom'
+import React from 'react'
+
+import { h, render } from 'preact'
+```
 
 For TS
 
