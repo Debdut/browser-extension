@@ -30,10 +30,10 @@ const config = {
   target: 'web',
   devtool: isProd ? 'none' : 'cheap-source-map',
   entry: {
-    background: join(Background, 'index.js'),
-    popup: join(Popup, 'index.jsx'),
-    content: join(Content, 'index.jsx'),
-    option: join(Option, 'index.jsx'),
+    background: join(Background, 'index.ts'),
+    popup: join(Popup, 'index.tsx'),
+    content: join(Content, 'index.tsx'),
+    option: join(Option, 'index.tsx'),
   },
   output: {
     path: join(__dirname, '../', 'dist'),
