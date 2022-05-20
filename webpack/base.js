@@ -1,10 +1,16 @@
 const CopyPlugin = require('copy-webpack-plugin');
-const { CheckerPlugin } = require('awesome-typescript-loader');
 const TerserPlugin = require('terser-webpack-plugin');
-const { DefinePlugin, optimize } = require('webpack');
+const {
+  DefinePlugin,
+  optimize
+} = require('webpack');
 const GenerateJsonFromJsPlugin = require('generate-json-from-js-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const { join } = require('path');
+const {
+  BundleAnalyzerPlugin
+} = require('webpack-bundle-analyzer');
+const {
+  join
+} = require('path');
 const dotenv = require('dotenv');
 
 const prodPlugins = [],
@@ -40,8 +46,10 @@ const config = {
     filename: '[name].js',
   },
   module: {
-    rules: [
-      { test: /\.tsx?$/, loader: 'ts-loader' },
+    rules: [{
+        test: /\.tsx?$/,
+        loader: 'ts-loader'
+      },
       {
         test: /\.jsx?$/,
         exclude: /(node_modules)/,
@@ -60,14 +68,12 @@ const config = {
       },
       {
         test: /\.(png|jpe?g|gif)$/i,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'assets/[name].[ext]',
-            },
+        use: [{
+          loader: 'file-loader',
+          options: {
+            name: 'assets/[name].[ext]',
           },
-        ],
+        }, ],
       },
       {
         test: /\.(gql)$/,
@@ -76,7 +82,13 @@ const config = {
       },
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        use: ['style-loader', {
+          loader: "css-loader",
+          options: {
+            importLoaders: 1,
+            modules: true,
+          },
+        }],
       },
       {
         test: /\.svg$/,
@@ -93,7 +105,7 @@ const config = {
           {
             loader: 'css-loader',
             options: {
-              importLoaders: 1
+              importLoaders: 1,
             }
           },
           'postcss-loader'
@@ -102,7 +114,6 @@ const config = {
     ],
   },
   plugins: [
-    new CheckerPlugin(),
     new DefinePlugin({
       'process.env': JSON.stringify(
         dotenv.config({
@@ -111,8 +122,7 @@ const config = {
       ),
     }),
     new CopyPlugin({
-      patterns: [
-        {
+      patterns: [{
           from: join(Assets, 'html'),
           to: 'assets/html',
         },
@@ -142,15 +152,17 @@ const config = {
   },
   optimization: {
     minimize: true,
-    minimizer: [new TerserPlugin({ extractComments: false })],
+    minimizer: [new TerserPlugin({
+      extractComments: false
+    })],
   }
 };
 
-const buildConfig = (browser) => ({
+const buildConfig = (browser, path) => ({
   ...config,
   name: browser,
   output: {
-    path: join(Dist, browser),
+    path: join(Dist, path || browser),
     filename: '[name].js',
   },
   plugins: [

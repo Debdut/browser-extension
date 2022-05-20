@@ -1,6 +1,6 @@
-const { version } = require('./version.json');
-const permissions = require('./permissions');
-const { name, short_name, description } = require('./app_info');
+const { version } = require('../version.json');
+const permissions = require('../permissions');
+const { name, short_name, description } = require('../app_info');
 
 module.exports = {
   version,

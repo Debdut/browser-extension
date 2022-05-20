@@ -1,11 +1,11 @@
-const base = require('./base');
+const base = require('./base/v2');
 
 module.exports = {
   ...base,
   browser_specific_settings: {
     gecko: {
-      id: "preact@example.com",
+      id: "browser@extension.com",
       strict_min_version: "42.0"
     }
-  }  
+  }
 }
