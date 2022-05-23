@@ -29,6 +29,18 @@
 
 Simply remove or don't use the technologies you don't like.
 
+## Start Commands
+
+```sh
+npm install
+npm run prebuild
+npm run init:profile
+npm run build:<browser_name> # brave | chrome | firefox
+npm run start:<browser_name> # brave | chrome | firefox
+```
+
+After first run, you can just do `npm run start:<browser_name>`
+
 ## 👩🏻‍🏫 Notes
 
 Browser binary paths needs to changed based on the OS and install locations in `package.json`. The default binary locations work for Mac OS.
@@ -71,18 +83,6 @@ Default Builds use manifest v3 in chrome, v2 in firefox and safari. To build wit
 - Manifest versions are per browser basis
 - For example, to change firefox build to v3
 - Change `base/v2` require to `base/v3` in `src/manifest/firefox.js`
-
-## Start Commands
-
-```sh
-npm install
-npm run prebuild
-npm run init:profile
-npm run build:<browser_name> # brave | chrome | firefox
-npm run start:<browser_name> # brave | chrome | firefox
-```
-
-After first run, you can just do `npm run start:<browser_name>`
 
 ## Commands
 
