@@ -3,7 +3,7 @@
 
 ![Generic badge](https://img.shields.io/badge/build-success-brightgreen.svg)
 
-> A Out of the Box 🎁 Browser Extension Template with support for React, Preact, Typescript and Manifest V3
+> A Out of the Box 🎁 Browser Extension Template with support for React, Preact, Typescript and Manifest V3 and builds on most browsers including Chrome, Firefox, Safari, Edge, Brave.
 
 ## 🏡 Builtin
 
@@ -51,7 +51,7 @@ Browser binary paths needs to changed based on the OS and install locations in `
 - Example, `/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome`
 - Do that for every browser
 
-Similarly, you can change the starting pages in browsers by changing `--start-url` varibale in `reload:<browser>` command
+Similarly, you can change the starting pages in browsers by changing `--start-url` varibale in `reload:<browser_name>` command
 
 Content Scripts, Popup and Options Page support React
 
@@ -135,4 +135,5 @@ npm run clean
 - [x] Firefox
 - [x] Opera (Chrome Build)
 - [x] Edge (Chrome  Build)
+- [x] Brave
 - [x] Safari
