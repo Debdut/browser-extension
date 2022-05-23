@@ -8,6 +8,7 @@
 ## 🏡 Builtin
 
 - Manifest v3/v2
+- Multi Browser build including Chrome, Firefox, Safari, Edge, Brave
 - Content Script
 - Background Page or Service Worker
 - Popup Page
