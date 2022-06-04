@@ -14,7 +14,7 @@
     "build": "NODE_ENV=production webpack",
     "build:chrome": "NODE_ENV=development webpack --config ./webpack/chrome.js",
     "build:firefox": "NODE_ENV=development webpack --config ./webpack/firefox.js",
-    "build:safari": "npm run init:safari && NODE_ENV=development webpack --config ./webpack/safari.js",
+    "build:safari": "NODE_ENV=development webpack --config ./webpack/safari.js && xcrun safari-web-extension-converter dist/safari-prebuild --project-location dist/safari --force --no-open && rm -rf safari-prebuild",
     "watch": "NODE_ENV=development webpack -w",
     "watch:chrome": "NODE_ENV=development webpack --config ./webpack/chrome.js -w",
     "watch:firefox": "NODE_ENV=development webpack --config ./webpack/firefox.js -w",

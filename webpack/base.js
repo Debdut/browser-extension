@@ -1,62 +1,62 @@
-const CopyPlugin = require('copy-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const {
   DefinePlugin,
   optimize
-} = require('webpack');
-const GenerateJsonFromJsPlugin = require('generate-json-from-js-webpack-plugin');
+} = require("webpack");
+const GenerateJsonFromJsPlugin = require("generate-json-from-js-webpack-plugin");
 const {
   BundleAnalyzerPlugin
-} = require('webpack-bundle-analyzer');
+} = require("webpack-bundle-analyzer");
 const {
   join
-} = require('path');
-const dotenv = require('dotenv');
+} = require("path");
+const dotenv = require("dotenv");
 
 const prodPlugins = [],
-  isProd = process.env.NODE_ENV === 'production';
+  isProd = process.env.NODE_ENV === "production";
 
 if (isProd) {
   prodPlugins.push(new optimize.AggressiveMergingPlugin(), new optimize.OccurrenceOrderPlugin());
 }
 
-const Root = join(__dirname, '..');
-const Source = join(Root, 'src');
-const Dist = join(Root, 'dist');
+const Root = join(__dirname, "..");
+const Source = join(Root, "src");
+const Dist = join(Root, "dist");
 
-const Assets = join(Source, 'assets');
-const Background = join(Source, 'background');
-const Content = join(Source, 'content');
-const Popup = join(Source, 'popup');
-const Lib = join(Source, 'lib');
-const Option = join(Source, 'option');
+const Assets = join(Source, "assets");
+const Background = join(Source, "background");
+const Content = join(Source, "content");
+const Popup = join(Source, "popup");
+const Lib = join(Source, "lib");
+const Option = join(Source, "option");
 
 const config = {
   mode: process.env.NODE_ENV,
-  target: 'web',
-  devtool: isProd ? 'none' : 'cheap-source-map',
+  target: "web",
+  devtool: isProd ? "none" : "cheap-source-map",
   entry: {
-    background: join(Background, 'index.ts'),
-    popup: join(Popup, 'index.tsx'),
-    content: join(Content, 'index.tsx'),
-    option: join(Option, 'index.tsx'),
+    background: join(Background, "index.ts"),
+    popup: join(Popup, "index.tsx"),
+    content: join(Content, "index.tsx"),
+    option: join(Option, "index.tsx"),
   },
   output: {
-    path: join(__dirname, '../', 'dist'),
-    filename: '[name].js',
+    path: join(__dirname, "../", "dist"),
+    filename: "[name].js",
   },
   module: {
     rules: [{
         test: /\.tsx?$/,
-        loader: 'ts-loader'
+        loader: "ts-loader"
       },
       {
         test: /\.jsx?$/,
         exclude: /(node_modules)/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
-            presets: ['@babel/preset-env'],
+            presets: ["@babel/preset-env"],
             plugins: [
               [
                 "@babel/plugin-transform-react-jsx",
@@ -69,20 +69,20 @@ const config = {
       {
         test: /\.(png|jpe?g|gif)$/i,
         use: [{
-          loader: 'file-loader',
+          loader: "file-loader",
           options: {
-            name: 'assets/[name].[ext]',
+            name: "assets/[name].[ext]",
           },
         }, ],
       },
       {
         test: /\.(gql)$/,
         exclude: /node_modules/,
-        loader: 'graphql-tag/loader',
+        loader: "graphql-tag/loader",
       },
       {
         test: /\.css$/i,
-        use: ['style-loader', {
+        use: ["style-loader", {
           loader: "css-loader",
           options: {
             importLoaders: 1,
@@ -92,30 +92,30 @@ const config = {
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack'],
+        use: ["@svgr/webpack"],
       },
       {
         test: /\.s[ac]ss$/i,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
+        use: ["style-loader", "css-loader", "sass-loader"],
       },
       {
         test: /\.pcss$/i,
         use: [
-          'style-loader',
+          "style-loader",
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               importLoaders: 1,
             }
           },
-          'postcss-loader'
+          "postcss-loader"
         ],
       },
     ],
   },
   plugins: [
     new DefinePlugin({
-      'process.env': JSON.stringify(
+      "process.env": JSON.stringify(
         dotenv.config({
           path: join(Root, `.env.${process.env.TARGET_ENV || process.env.NODE_ENV}`),
         }).parsed,
@@ -123,16 +123,16 @@ const config = {
     }),
     new CopyPlugin({
       patterns: [{
-          from: join(Assets, 'html'),
-          to: 'assets/html',
+          from: join(Assets, "html"),
+          to: "assets/html",
         },
         {
-          from: join(Assets, 'images'),
-          to: 'assets/images',
+          from: join(Assets, "images"),
+          to: "assets/images",
         },
         {
-          from: join(Assets, 'json'),
-          to: 'assets/json',
+          from: join(Assets, "json"),
+          to: "assets/json",
         }
       ]
     }),
@@ -140,7 +140,7 @@ const config = {
     ...prodPlugins,
   ],
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx', '.png', '.svg', '.gql'],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".png", ".svg", ".gql"],
     alias: {
       lib: Lib,
       background: Background,
@@ -163,13 +163,13 @@ const buildConfig = (browser, path) => ({
   name: browser,
   output: {
     path: join(Dist, path || browser),
-    filename: '[name].js',
+    filename: "[name].js",
   },
   plugins: [
     ...config.plugins,
     new GenerateJsonFromJsPlugin({
-      path: join(Source, 'manifest', `${browser}.js`),
-      filename: 'manifest.json',
+      path: join(Source, "manifest", `${browser}.js`),
+      filename: "manifest.json",
     }),
   ],
 });

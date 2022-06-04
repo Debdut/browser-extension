@@ -1,5 +1,5 @@
 const {
   buildConfig
-} = require('./base');
+} = require("./base");
 
-module.exports = buildConfig('firefox');
+module.exports = buildConfig("firefox");
