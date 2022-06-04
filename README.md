@@ -1,13 +1,14 @@
-# Browser Extension Template [![Generic badge](https://img.shields.io/twitter/follow/kdebdut?style=social)](https://twitter.com/KarmakarDebdut)
+# Browser Extension Template [![Generic badge](https://img.shields.io/twitter/follow/kdebdut?style=social)](https://twitter.com/KDebdut)
 ## w/ React Preact Typescript 
 
 ![Generic badge](https://img.shields.io/badge/build-success-brightgreen.svg)
 
-> A Out of the Box 🎁 Browser Extension Template with support for React, Preact, Typescript and Manifest V3
+> A Out of the Box 🎁 Browser Extension Template with support for React, Preact, Typescript and Manifest V3 and builds on most browsers including Chrome, Firefox, Safari, Edge, Brave.
 
 ## 🏡 Builtin
 
 - Manifest v3/v2
+- Multi Browser build including Chrome, Firefox, Safari, Edge, Brave
 - Content Script
 - Background Page or Service Worker
 - Popup Page
@@ -29,6 +30,18 @@
 
 Simply remove or don't use the technologies you don't like.
 
+## Start Commands
+
+```sh
+npm install
+npm run prebuild
+npm run init:profile
+npm run build:<browser_name> # brave | chrome | firefox
+npm run start:<browser_name> # brave | chrome | firefox
+```
+
+After first run, you can just do `npm run start:<browser_name>`
+
 ## 👩🏻‍🏫 Notes
 
 Browser binary paths needs to changed based on the OS and install locations in `package.json`. The default binary locations work for Mac OS.
@@ -38,7 +51,7 @@ Browser binary paths needs to changed based on the OS and install locations in `
 - Example, `/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome`
 - Do that for every browser
 
-Similarly, you can change the starting pages in browsers by changing `--start-url` varibale in `reload:<browser>` command
+Similarly, you can change the starting pages in browsers by changing `--start-url` varibale in `reload:<browser_name>` command
 
 Content Scripts, Popup and Options Page support React
 
@@ -71,18 +84,6 @@ Default Builds use manifest v3 in chrome, v2 in firefox and safari. To build wit
 - Manifest versions are per browser basis
 - For example, to change firefox build to v3
 - Change `base/v2` require to `base/v3` in `src/manifest/firefox.js`
-
-## Start Commands
-
-```sh
-npm install
-npm run prebuild
-npm run init:profile
-npm run build:<browser_name> # brave | chrome | firefox
-npm run start:<browser_name> # brave | chrome | firefox
-```
-
-After first run, you can just do `npm run start:<browser_name>`
 
 ## Commands
 
@@ -134,4 +135,5 @@ npm run clean
 - [x] Firefox
 - [x] Opera (Chrome Build)
 - [x] Edge (Chrome  Build)
+- [x] Brave
 - [x] Safari
