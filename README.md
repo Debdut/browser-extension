@@ -52,7 +52,7 @@ Browser binary paths needs to changed based on the OS and install locations in `
 - Example, `/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome`
 - Do that for every browser
 
-Similarly, you can change the starting pages in browsers by changing `--start-url` varibale in `reload:<browser_name>` command
+Similarly, you can change the starting pages in browsers by changing `--start-url` variable in `reload:<browser_name>` command
 
 Content Scripts, Popup and Options Page support React
 
