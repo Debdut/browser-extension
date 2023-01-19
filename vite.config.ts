@@ -14,7 +14,7 @@ const publicDir = resolve(__dirname, "public");
 const folders = fs.readdirSync(pagesDir);
 
 function getInput() {
-  const input: { [x: string]: string } = {};
+  const input: { [x: string]: any } = {};
   const entryPoints = [
     "index.html",
     "index.ts",
@@ -65,6 +65,9 @@ export default defineConfig({
       input: getInput(),
       output: {
         entryFileNames: (chunk) => `src/pages/${chunk.name}/index.js`,
+      },
+      watch: {
+        exclude: ["node_modules/**"],
       },
     },
   },
