@@ -2,6 +2,7 @@ import { GetInstalledBrowsers, BrowserPath } from "get-installed-browsers";
 import fs from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import concurrently from "concurrently";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,27 +27,79 @@ function toKebabCase(str: string) {
 }
 
 // create tmp directory if not exists
-const tmpDir = resolve(__dirname, "../tmp");
+const tmpDir = resolve(__dirname, "..", "tmp");
 if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir);
 }
 
+const tmpProfileDir = resolve(tmpDir, "profiles");
+if (!fs.existsSync(tmpProfileDir)) {
+  fs.mkdirSync(tmpProfileDir);
+}
+
 function createProfile(browser: string) {
-  const profileDir = resolve(tmpDir, browser);
+  const profileDir = resolve(tmpProfileDir, browser);
   if (!fs.existsSync(profileDir)) {
     fs.mkdirSync(profileDir);
   }
   return profileDir;
 }
 
-function launch(browser: BrowserPath, profileDir: string) {
+function GetCommand(command: string, args: Record<string, string | null>) {
+  let fullCommand = command;
+
+  for (const [key, value] of Object.entries(args)) {
+    if (value) {
+      fullCommand += ` --${key}=${value}`;
+    } else {
+      fullCommand += ` --${key}`;
+    }
+  }
+
+  return fullCommand;
+}
+
+function launchCommand(browser: BrowserPath, profileDir: string) {
+  let command = "web-ext run";
+  const args: Record<string, string | null> = {
+    "start-url": "example.com",
+    "profile-create-if-missing": null,
+    "browser-console": null,
+    "keep-profile-changes": null,
+  };
+
   if (browser.type === "firefox") {
-    return `web-ext --source-dir=dist/v2 run --firefox ${browser.path} --start-url example.com --firefox-profile ${profileDir} --profile-create-if-missing --keep-profile-changes`;
+    args["source-dir"] = resolve(__dirname, "..", "dist", "v2");
+    args["firefox-binary"] = browser.path;
+    args["firefox-profile"] = profileDir;
+
+    return GetCommand(command, args);
   }
   if (browser.type === "chrome") {
-    return `web-ext --source-dir=dist/v3 run -t chromium --chromium-binary ${browser.path} --start-url example.com --chromium-profile ${profileDir} --profile-create-if-missing --keep-profile-changes`
+    args["source-dir"] = resolve(__dirname, "..", "dist", "v3");
+    args["target"] = "chromium";
+    args["chromium-binary"] = browser.path;
+    args["chromium-profile"] = profileDir;
+
+    return GetCommand(command, args);
   }
+  if (browser.type === "safari") {
+    return "echo 'Safari reloading is not supported. Build in XCode and reload manually!'";
+  }
+
   return;
+}
+
+function manifestVersion(browser: BrowserPath) {
+  if (browser.type === "firefox") {
+    return 2;
+  } else if (browser.type === "chrome") {
+    return 3;
+  } else if (browser.type === "safari") {
+    return 2;
+  }
+
+  return -1;
 }
 
 (async function Init() {
@@ -62,9 +115,44 @@ function launch(browser: BrowserPath, profileDir: string) {
     }
   }
 
+  const commands: string[] = [];
+  const versions: Set<number> = new Set();
+
   for (const matchedBrowser of matchedBrowsers) {
     const profileDir = createProfile(toKebabCase(matchedBrowser.name));
-    const command = launch(matchedBrowser, profileDir);
-    console.log(command + "\n");
+    const command = launchCommand(matchedBrowser, profileDir);
+
+    if (command) {
+      commands.push(command);
+    }
+
+    versions.add(manifestVersion(matchedBrowser));
   }
+
+  if (commands.length === 0) {
+    console.error("No browser found");
+    process.exit(1);
+  }
+
+  for (const version of versions) {
+    commands.unshift(`npm run dev:v${version}`);
+  }
+
+  const { result } = concurrently(commands);
+
+  result
+    .then(() => {
+      console.log("All processes exited");
+      process.exit(0);
+    })
+    .catch((err) => {
+      for (const { command, exitCode } of err) {
+        if (exitCode !== 0) {
+          console.error(`${command.command}:\n exited with code ${exitCode}\n`);
+          console.error(command.error);
+        }
+      }
+
+      process.exit(1);
+    });
 })();

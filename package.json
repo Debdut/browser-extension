@@ -1,23 +1,29 @@
 {
-  "name": "vite-web-extension",
-  "displayName": "Web Extension Boilerplate",
-  "version": "1.0.4",
-  "description": "A simple chrome extension template with Vite, React, TypeScript and Tailwind CSS.",
+  "name": "browser-extension",
+  "displayName": "Browser Extension",
+  "version": "1.9.0",
+  "description": "Browser Extension Boilerplate",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JohnBra/web-extension.git"
+    "url": "https://github.com/debdut/browser-extension.git"
   },
   "scripts": {
     "start": "ts-node-esm scripts/start.ts",
-    "build": "tsc --noEmit && vite build",
-    "dev": "vite build --watch"
+    "build": "ts-node-esm scripts/build.ts",
+    "clean": "rimraf dist",
+
+    "build:v2": "tsc --noEmit && vite build --config vite/v2.config.ts",
+    "build:v3": "tsc --noEmit && vite build --config vite/v3.config.ts",
+    "dev:v2": "vite build --watch --config vite/v2.config.ts",
+    "dev:v3": "vite build --watch --config vite/v3.config.ts"
   },
   "type": "module",
   "dependencies": {
+    "@types/webextension-polyfill": "^0.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "webextension-polyfill-ts": "^0.26.0"
+    "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.209",
@@ -28,6 +34,7 @@
     "@typescript-eslint/parser": "^5.48.2",
     "@vitejs/plugin-react": "^3.0.1",
     "autoprefixer": "^10.4.13",
+    "concurrently": "^7.6.0",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.27.5",
@@ -35,8 +42,9 @@
     "eslint-plugin-react": "^7.32.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "fs-extra": "^11.1.0",
-    "get-installed-browsers": "^0.1.3",
+    "get-installed-browsers": "^0.1.4",
     "postcss": "^8.4.21",
+    "rimraf": "^4.1.1",
     "tailwindcss": "^3.2.4",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4",

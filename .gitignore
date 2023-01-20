@@ -387,8 +387,11 @@ $RECYCLE.BIN/
 .idea
 
 #generated manifest
-public/manifest.json
+public/v2/manifest.json
+public/v3/manifest.json
 
 #copied contentStyle
-public/contentStyle.css
+public/v2/contentStyle.css
+public/v3/contentStyle.css
+
 tmp

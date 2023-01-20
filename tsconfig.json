@@ -23,5 +23,5 @@
     }
   },
   "include": ["src",
-    "utils", "vite.config.ts"],
+    "utils", "vite.config.ts", "vite/make-manifest.ts", "vite/copy-content-style.ts"],
 }
