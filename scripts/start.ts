@@ -1,4 +1,4 @@
-import { GetInstalledBrowsers } from "get-installed-browsers";
+import { GetInstalledBrowsers, BrowserPath } from "get-installed-browsers";
 import fs from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -9,12 +9,6 @@ const __dirname = dirname(__filename);
 if (process.argv.length < 3) {
   console.error("Usage: npm run start [<browser>...]");
   process.exit(1);
-}
-
-interface Browser {
-  name: string;
-  type: string;
-  path: string;
 }
 
 const browsers = process.argv
@@ -45,7 +39,7 @@ function createProfile(browser: string) {
   return profileDir;
 }
 
-function launch(browser: Browser, profileDir: string) {
+function launch(browser: BrowserPath, profileDir: string) {
   if (browser.type === "firefox") {
     return `web-ext --source-dir=dist/v2 run --firefox ${browser.path} --start-url example.com --firefox-profile ${profileDir} --profile-create-if-missing --keep-profile-changes`;
   }
@@ -57,7 +51,7 @@ function launch(browser: Browser, profileDir: string) {
 
 (async function Init() {
   const availableBrowsers = await GetInstalledBrowsers();
-  const matchedBrowsers: Browser[] = [];
+  const matchedBrowsers: BrowserPath[] = [];
   
   for (const availableBrowser of availableBrowsers) {
     const availableBrowserName = toKebabCase(availableBrowser.name);
