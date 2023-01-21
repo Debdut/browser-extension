@@ -3,6 +3,7 @@ import fs from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import concurrently from "concurrently";
+import { execSync } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -66,20 +67,21 @@ function launchCommand(browser: BrowserPath, profileDir: string) {
     "profile-create-if-missing": null,
     "browser-console": null,
     "keep-profile-changes": null,
+    "verbose": null,
   };
 
   if (browser.type === "firefox") {
-    args["source-dir"] = resolve(__dirname, "..", "dist", "v2");
-    args["firefox-binary"] = browser.path;
-    args["firefox-profile"] = profileDir;
+    args["source-dir"] = `"${resolve(__dirname, "..", "dist", "v2")}"`;
+    args["firefox-binary"] = `"${browser.path}"`;
+    args["firefox-profile"] = `"${profileDir}"`;
 
     return GetCommand(command, args);
   }
   if (browser.type === "chrome") {
-    args["source-dir"] = resolve(__dirname, "..", "dist", "v3");
+    args["source-dir"] = `"${resolve(__dirname, "..", "dist", "v3")}"`;
     args["target"] = "chromium";
-    args["chromium-binary"] = browser.path;
-    args["chromium-profile"] = profileDir;
+    args["chromium-binary"] = `"${browser.path}"`;
+    args["chromium-profile"] = `"${profileDir}"`;
 
     return GetCommand(command, args);
   }
@@ -102,8 +104,8 @@ function manifestVersion(browser: BrowserPath) {
   return -1;
 }
 
-(async function Init() {
-  const availableBrowsers = await GetInstalledBrowsers();
+function Init() {
+  const availableBrowsers = GetInstalledBrowsers();
   const matchedBrowsers: BrowserPath[] = [];
   
   for (const availableBrowser of availableBrowsers) {
@@ -136,6 +138,7 @@ function manifestVersion(browser: BrowserPath) {
 
   for (const version of versions) {
     commands.unshift(`npm run dev:v${version}`);
+    execSync(`npm run build:v${version}`, { stdio: "inherit" });
   }
 
   const { result } = concurrently(commands);
@@ -149,10 +152,10 @@ function manifestVersion(browser: BrowserPath) {
       for (const { command, exitCode } of err) {
         if (exitCode !== 0) {
           console.error(`${command.command}:\n exited with code ${exitCode}\n`);
-          console.error(command.error);
+          throw new Error(command.error);
         }
       }
-
-      process.exit(1);
     });
-})();
+}
+
+Init();

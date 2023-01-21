@@ -42,8 +42,8 @@ function manifestVersion(browser: BrowserPath) {
 }
 
 
-(async function Init() {
-  const availableBrowsers = await GetInstalledBrowsers();
+function Init() {
+  const availableBrowsers = GetInstalledBrowsers();
   const matchedBrowsers: BrowserPath[] = [];
   
   for (const availableBrowser of availableBrowsers) {
@@ -87,4 +87,6 @@ function manifestVersion(browser: BrowserPath) {
     } catch (error) {
     }
   }
-})();
+}
+
+Init();
