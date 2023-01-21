@@ -9,7 +9,6 @@ export interface ManifestTypeV2 {
   default_locale?: string | undefined;
   description?: string | undefined;
   icons?: chrome.runtime.ManifestIcons | undefined;
-  action?: chrome.runtime.ManifestAction | undefined;
   author?: string | undefined;
   background?: {
     page?: string;
@@ -25,12 +24,12 @@ export interface ManifestTypeV2 {
     default_popup?: string;
     theme_icons?: chrome.runtime.ManifestIcons[] | undefined;
   };
-  chrome_settings_overrides?: boolean;
-  chrome_url_overrides?: {
-    bookmarks?: string;
-    history?: string;
-    newtab?: string;
-  };
+  // chrome_settings_overrides?: boolean;
+  // chrome_url_overrides?: {
+  //   bookmarks?: string;
+  //   history?: string;
+  //   newtab?: string;
+  // };
   commands?:
     | {
         [name: string]: {
@@ -85,7 +84,7 @@ export interface ManifestTypeV2 {
       layouts: string[];
     }[];
   key?: string;
-  minimum_chrome_version?: string;
+  // minimum_chrome_version?: string;
   nacl_modules?: 
     {
       path: string;
@@ -100,10 +99,9 @@ export interface ManifestTypeV2 {
     keyword: string;
   };
   optional_permissions?: [];
-  options_page?: string;
   options_ui?: {
     page: string;
-    chrome_style?: boolean;
+    browser_style?: boolean;
     open_in_tab?: boolean;
   };
   page_action?: {
@@ -170,20 +168,5 @@ export interface ManifestTypeV2 {
     | undefined;
   update_url?: string | undefined;
   version_name?: string | undefined;
-  web_accessible_resources?:
-    | (WebAccessibleResourceById | WebAccessibleResourceByMatch)[]
-    | undefined;
-}
-
-
-interface WebAccessibleResourceByMatch {
-  matches: string[];
-  resources: string[];
-  use_dynamic_url?: boolean;
-}
-
-interface WebAccessibleResourceById {
-  extension_ids: string[];
-  resources: string[];
-  use_dynamic_url?: boolean;
+  web_accessible_resources?: string[] | undefined;
 }

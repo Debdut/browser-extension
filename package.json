@@ -1,7 +1,7 @@
 {
   "name": "browser-extension",
   "displayName": "Browser Extension",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Browser Extension Boilerplate",
   "license": "MIT",
   "repository": {

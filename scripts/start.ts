@@ -67,7 +67,6 @@ function launchCommand(browser: BrowserPath, profileDir: string) {
     "profile-create-if-missing": null,
     "browser-console": null,
     "keep-profile-changes": null,
-    "verbose": null,
   };
 
   if (browser.type === "firefox") {
