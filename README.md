@@ -120,3 +120,7 @@ npm run build [browser]
 # Clean Builds
 npm run clean
 ```
+
+## Credits
+
+V2 wouldn't have been possible without my brilliant friend [Sayan Naskar](https://github.com/nascarsayan), the more credit we give him is less!
