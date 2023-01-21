@@ -4,9 +4,9 @@
 
 ![Generic badge](https://img.shields.io/badge/build-success-brightgreen.svg)
 
-> A Out of the Box 🎁 Browser Extension Template with support for React, Preact, Typescript and Manifest V3 and builds on most browsers including Chrome, Firefox, Safari, Edge, Brave.
+> An out of the box, Browser Extension Template with fast Vite builds, support for React, Preact, Typescript, Manifest V3/V2 support and multi browser build including Chrome, Firefox, Safari, Edge, Brave.
 
-## 🏡 Builtin
+## Builtin
 
 - Manifest v3/v2
 - Multi Browser build including Chrome, Firefox, Safari, Edge, Brave
@@ -14,127 +14,107 @@
 - Background Page or Service Worker
 - Popup Page
 - Options Page
+- Devtools Page
+- Newtab Page
 - Automatically opens browser
+- Runs multiple browsers in parallel
 - Autoreloads browser
 - Saves browser profiles for next start
 
-## 🎗 Supports
+ ## Start Commands
 
+```sh
+npm install
+npm run start [browsers]
+# example
+# npm run start chrome firefox brave safari
+```
+
+That's it, if you got the browsers in the start command installed, it automatically builds for that, starts all of them, loads the extensions and reloads them on change. Vite makes sure the builds and reloads are really fast.
+
+See browser support below.
+
+## Supports
+
+- Vite 3
 - React 18
 - Typescript
 - Preact X
 - PostCSS
-- GraphQL
-- JSON Imports
-- Sass
-- Webpack 5
 
 Simply remove or don't use the technologies you don't like.
 
-## Start Commands
+Scripts & Pages (located in `src/pages`):
 
-```sh
-npm install
-npm run prebuild
-npm run init:profile
-npm run build:<browser_name> # brave | chrome | firefox
-npm run start:<browser_name> # brave | chrome | firefox
-```
+- background
+- content
+- history
+- options
+- popup
+- bookmarks  
+- devtools   
+- newtab
+- panel
 
-After first run, you can just do `npm run start:<browser_name>`
+Just delete the folders of pages you don't require, the builds scripts detects automatically what's in there and adjusts the manifest automatically. In each of the pages folder, the target main script is the first of
 
-## 👩🏻‍🏫 Notes
+- index.html
+- index.ts
+- index.tsx
+- index.js
+- index.jsx
+- main.html
+- main.ts
+- main.tsx
+- main.js
+- main.jsx
 
-Browser binary paths needs to changed based on the OS and install locations in `package.json`. The default binary locations work for Mac OS.
+Browsers:
+- arc
+- brave
+- chrome
+- chrome-beta
+- chrome-canary
+- chromium
+- edge
+- firefox
+- firefox-developer-editon
+- firefox
+- opera
+- orion *
+- safari *
+- safari-beta *
+- safari-technical-preview *
+- sidekick
+- vivaldi
 
-- Locate `reload:chrome` command in `package.json`
-- Change chrome path after `--chromium-binary` to chrome's path in your os
-- Example, `/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome`
-- Do that for every browser
+Browsers with * stars get a build, but needs to be launched manually, and extension needs to loaded manually with Xcode.
 
-Similarly, you can change the starting pages in browsers by changing `--start-url` variable in `reload:<browser_name>` command
+## Notes
 
-Content Scripts, Popup and Options Page support React
+Updates:
 
-You can choose to not use react in any of these, just remove the react imports
-
-React, Preact, Typescript or PostCSS are all optional
-
-For Disabling TS
-
-- Just change file extensions ts to js and tsx to jsx
-- Change all ts to js and tsx to jsx in `webpack/base.js`
-
-For Preact builds
-
-- Disable TS using instructions above
-- `npm install preact`
-- Enable `{ "pragma":"h" }` in `webpack/base.js`
-- Enable `"jsxImportSource": "preact"` in `tsconfig.json`
-- Change react imports to preact
-
-```js
-import { render } from "react-dom";
-import React from "react";
-
-import { h, render } from "preact";
-```
-
-Default Builds use manifest v3 in chrome, v2 in firefox and safari. To build with manifest v2:
-
-- Manifest versions are per browser basis
-- For example, to change firefox build to v3
-- Change `base/v2` require to `base/v3` in `src/manifest/firefox.js`
+- Webpack to Vite: 5x faster builds
+- Detects all browsers automatically
+- Automatic Manifest
+- All Extension Pages and Scripts Support
+- 17 browsers support
 
 ## Commands
 
 ```sh
-# Initial Setup
 # Install packages
 npm install
 
-# Prebuild
-npm run prebuild
 
-# Init dirs for browser profiles
-npm run init:profile
+# Live Dev for multiple browsers
+npm run start [browser]
+# npm run start chrome firefox safari
 
-# Live Build for specific browser
-# browser_name: brave | chrome | firefox | safari
-npm run watch:<browser_name>
-
-# Live Build for chrome
-npm run watch:chrome
-
-# Live Build and Reload for specific browser
-# browser_name: brave | chrome | firefox | safari
-npm run start:<browser_name>
-
-# Live Build and Reload for chrome
-npm run start:chrome
-
-# Build for all Browsers
-npm run build
-
-# Build for specific browser
-# browser_name: chrome | firefox | safari
-npm run build:<browser_name>
-
-# Build for chrome
-npm run build:chrome
-
-# Run Tests with Mocha
-npm run test
+# Build for multiple browsers
+npm run build [browser]
+# npm run build chrome firefox safari
 
 # Clean Builds
 npm run clean
 ```
-
-## Browser Support
-
-- [x] Chrome
-- [x] Firefox
-- [x] Opera (Chrome Build)
-- [x] Edge (Chrome Build)
-- [x] Brave
-- [x] Safari

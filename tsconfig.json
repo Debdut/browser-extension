@@ -1,22 +1,27 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "sourceMap": false,
-    "types": ["@types/chrome", "node"],
-    "typeRoots": ["node_modules/@types"],
-    "moduleResolution": "node",
-    "lib": ["es2019", "dom"],
+    "target": "esnext",
+    "types": ["vite/client", "node"],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
-    "jsx": "react-jsx",
-    // "jsxImportSource": "preact",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "downlevelIteration": true,
-    "baseUrl": "./src",
-    "outDir": "./build",
-    "skipLibCheck": true
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@assets/*": ["src/assets/*"],
+      "@pages/*": ["src/pages/*"]
+    }
   },
-  "include": ["src", "typings.d.ts"],
-  "exclude": ["node_modules", "src/**/*.spec.ts"]
+  "include": ["src",
+    "utils", "vite.config.ts", "vite/make-manifest.ts", "vite/copy-content-style.ts"],
 }
