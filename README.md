@@ -75,6 +75,7 @@ Browsers:
 - chrome
 - chrome-beta
 - chrome-canary
+- chromium
 - edge
 - firefox
 - firefox-developer-editon
