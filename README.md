@@ -92,6 +92,8 @@ Browsers with * stars get a build, but needs to be launched manually, and extens
 
 ## Notes
 
+If you want webpack build, checkout the webpack branch.
+
 Updates:
 
 - Webpack to Vite: 5x faster builds
