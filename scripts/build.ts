@@ -4,7 +4,6 @@ import { fileURLToPath } from "url";
 
 import { build } from "esbuild";
 import { html } from "@esbuilder/html";
-import { root } from "postcss";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -127,7 +126,12 @@ function buildJSPage(name: string, entry: string) {
 
 async function main() {
   for (const [name, entry] of Object.entries(getPageInputs())) {
+    console.log(`Building ${name} from ${entry}:`);
+    console.time(name);
+
     await buildPage(name, entry);
+
+    console.timeEnd(name);
   }
 }
 
