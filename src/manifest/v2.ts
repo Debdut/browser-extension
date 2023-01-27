@@ -12,43 +12,43 @@ const manifest: ManifestTypeV2 = {
   web_accessible_resources: ["contentStyle.css", "icon-128.png", "icon-34.png", "assets/*"],
 };
 
-function getManifestV2(folders: string[]): ManifestTypeV2 {
-  if (folders.length === 0) {
+function getManifestV2(pageDirMap: { [x: string]: any }): ManifestTypeV2 {
+  const pages = Object.keys(pageDirMap);
+
+  if (pages.length === 0) {
     return manifest;
   }
 
-  if (folders.indexOf("options") > -1) {
+  if (pages.indexOf("options") > -1) {
     manifest.options_ui = {
-      page: "src/pages/options/index.html"
+      page: pageDirMap["options"],
     };
   }
 
-  if (folders.indexOf("background") > -1) {
+  if (pages.indexOf("background") > -1) {
     manifest.background = {
-      scripts: ["src/pages/background/index.js"],
+      scripts: [pageDirMap["background"]],
     };
   }
 
-  if (folders.indexOf("popup") > -1) {
+  if (pages.indexOf("popup") > -1) {
     manifest.browser_action = {
-      default_popup: "src/pages/popup/index.html",
+      default_popup: pageDirMap["popup"],
       default_icon: "icon-34.png",
     };
   }
 
-  if (folders.indexOf("content") > -1) {
+  if (pages.indexOf("content") > -1) {
     manifest.content_scripts = [
       {
         matches: ["http://*/*", "https://*/*", "<all_urls>"],
-        js: ["src/pages/content/index.js"],
-        css: ["contentStyle.css"],
-        
+        js: [pageDirMap["content"]],
       },
     ];
   }
 
-  if (folders.indexOf("devtools") > -1) {
-    manifest.devtools_page = "src/pages/devtools/index.html";
+  if (pages.indexOf("devtools") > -1) {
+    manifest.devtools_page = pageDirMap["devtools"];
   }
 
   return manifest;

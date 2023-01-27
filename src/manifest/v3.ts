@@ -1,3 +1,4 @@
+import { object } from 'prop-types';
 import pkg from '../../package.json';
 import { ManifestTypeV3 } from './v3-type';
 
@@ -17,61 +18,62 @@ const manifest: ManifestTypeV3 = {
   ],
 };
 
-function getManifestV3(folders:string[]): ManifestTypeV3 {
-  if (folders.length === 0) {
+function getManifestV3(pageDirMap: { [x: string]: any }): ManifestTypeV3 {
+  const pages = Object.keys(pageDirMap);
+
+  if (pages.length === 0) {
     return manifest;
   }
   
-  if (folders.indexOf("options") > -1) {
+  if (pages.indexOf("options") > -1) {
     manifest.options_ui = {
-      page: "src/pages/options/index.html"
+      page: pageDirMap["options"],
     };
   }
   
-  if (folders.indexOf('background') > -1) {
+  if (pages.indexOf("background") > -1) {
     manifest.background = {
-      service_worker: "src/pages/background/index.js",
+      service_worker: pageDirMap["background"],
       type: "module",
     };
   }
   
-  if (folders.indexOf('popup') > -1) {
+  if (pages.indexOf("popup") > -1) {
     manifest.action = {
-      default_popup: "src/pages/popup/index.html",
+      default_popup: pageDirMap["popup"],
       default_icon: "icon-34.png",
     };
   }
   
-  if (folders.indexOf('newtab') > -1) {
+  if (pages.indexOf("newtab") > -1) {
     manifest.chrome_url_overrides = {
-      newtab: "src/pages/newtab/index.html",
+      newtab: pageDirMap["newtab"],
     };
   }
   
-  if (folders.indexOf('bookmarks') > -1) {
+  if (pages.indexOf("bookmarks") > -1) {
     manifest.chrome_url_overrides = {
-      bookmarks: "src/pages/bookmarks/index.html",
+      bookmarks: pageDirMap["bookmarks"],
     };
   }
   
-  if (folders.indexOf('history') > -1) {
+  if (pages.indexOf("history") > -1) {
     manifest.chrome_url_overrides = {
-      history: "src/pages/history/index.html",
+      history: pageDirMap["history"],
     };
   }
   
-  if (folders.indexOf('content') > -1) {
+  if (pages.indexOf("content") > -1) {
     manifest.content_scripts = [
       {
         matches: ["http://*/*", "https://*/*", "<all_urls>"],
-        js: ["src/pages/content/index.js"],
-        css: ["contentStyle.css"],
+        js: [pageDirMap["content"]],
       },
     ];
   }
   
-  if (folders.indexOf('devtools') > -1) {
-    manifest.devtools_page = "src/pages/devtools/index.html";
+  if (pages.indexOf("devtools") > -1) {
+    manifest.devtools_page = pageDirMap["devtools"];
   }
 
   return manifest;
