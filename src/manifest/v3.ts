@@ -11,7 +11,7 @@ const manifest: ManifestTypeV3 = {
   },
   web_accessible_resources: [
     {
-      resources: ["contentStyle.css", "icon-128.png", "icon-34.png"],
+      resources: ["contentStyle.css", "icon-128.png", "icon-34.png", "assets/*"],
       matches: [],
     },
   ],
@@ -22,8 +22,10 @@ function getManifestV3(folders:string[]): ManifestTypeV3 {
     return manifest;
   }
   
-  if (folders.indexOf('options') > -1) {
-    manifest.options_page = "src/pages/options/index.html";
+  if (folders.indexOf("options") > -1) {
+    manifest.options_ui = {
+      page: "src/pages/options/index.html"
+    };
   }
   
   if (folders.indexOf('background') > -1) {

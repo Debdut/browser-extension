@@ -1,92 +1,134 @@
-import { GetInstalledBrowsers, BrowserPath } from "get-installed-browsers";
-import { resolve, dirname } from "path";
+import fs from "fs";
+import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
-import { execSync } from "child_process";
+
+import { build } from "esbuild";
+import { html } from "@esbuilder/html";
+import { root } from "postcss";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-if (process.argv.length < 3) {
-  console.error("Usage: npm run build [<browser>...]");
-  process.exit(1);
-}
+const rootDir = resolve(__dirname, "..");
+const srcDir = resolve(rootDir, "src");
+const pagesDir = resolve(srcDir, "pages");
+const assetsDir = resolve(srcDir, "assets");
+const outDir = resolve(__dirname, "..", "dist");
+const publicDir = resolve(__dirname, "..", "public");
 
-const browsers = process.argv
-  .splice(2)
-  .reduce((acc, browser) => {
-    const browserName = browser.toLowerCase();
-    if (acc.indexOf(browserName) === -1) {
-      acc.push(browserName);
-    }
-    return acc;
-  }, [] as string[]);
+const pageDirs = fs.readdirSync(pagesDir);
 
-function toKebabCase(str: string) {
-  return str.replace(/([a-z]) ([A-Z])/g, "$1-$2").toLowerCase();
-}
+function getPageInputs() {
+  const input: { [x: string]: any } = {};
+  const entryPoints = [
+    "index.html",
+    "index.ts",
+    "index.tsx",
+    "index.js",
+    "index.jsx",
+    "main.html",
+    "main.ts",
+    "main.tsx",
+    "main.js",
+    "main.jsx",
+  ];
 
-const dist = resolve(__dirname, "..", "dist");
-const v2 = resolve(dist, "v2");
-const v3 = resolve(dist, "v3");
-
-function manifestVersion(browser: BrowserPath) {
-  if (browser.type === "firefox") {
-    return 2;
-  } else if (browser.type === "chrome") {
-    return 3;
-  } else if (browser.type === "safari") {
-    return 2;
-  }
-
-  return -1;
-}
-
-
-function Init() {
-  const availableBrowsers = GetInstalledBrowsers();
-  const matchedBrowsers: BrowserPath[] = [];
-  
-  for (const availableBrowser of availableBrowsers) {
-    const availableBrowserName = toKebabCase(availableBrowser.name);
-    for (const browser of browsers) {
-      if (availableBrowserName === browser) {
-        matchedBrowsers.push(availableBrowser);
+  const getFirstExistingFile = (folder: string): string | undefined => {
+    for (const entryPoint of entryPoints) {
+      const file = resolve(pagesDir, folder, entryPoint);
+      if (fs.existsSync(file)) {
+        return file;
       }
     }
-  }
+  };
 
-  if (matchedBrowsers.length === 0) {
-    console.error("No browser found");
-    process.exit(1);
-  }
-
-  const commands: string[] = [];
-  const versions: Set<number> = new Set();
-
-  for (const matchedBrowser of matchedBrowsers) {
-    versions.add(manifestVersion(matchedBrowser));
-  }
-
-  for (const version of versions) {
-    commands.unshift(`npm run build:v${version}`);
-  }
-
-  for (const matchedBrowser of matchedBrowsers) {
-    const version = manifestVersion(matchedBrowser);
-    const inputDir = version === 2 ? v2 : v3;
-    const outDir = resolve(dist, toKebabCase(matchedBrowser.name));
-
-    commands.push(`cp -r ${inputDir} ${outDir}` )
-  }
-
-  for (const command of commands) {
-    console.log(command  + "\n\n");
-
-    try {
-      execSync(command, { stdio: "inherit" });      
-    } catch (error) {
+  pageDirs.forEach((folder) => {
+    const pages = resolve(pagesDir, folder);
+    if (!fs.statSync(pages).isDirectory()) {
+      return;
     }
+    const entry = getFirstExistingFile(folder)
+      ?.replace(rootDir + "/", "");
+    if (entry) {
+      input[folder] = entry;
+    }
+  });
+
+  return input;
+}
+
+// get extension from path
+function getExtension(path: string) {
+  return path.split(".").pop();
+}
+
+function buildPage(name: string, entry: string) {
+  const ext = getExtension(entry);
+  if (ext === "html") {
+    if (name === "content") {
+      throw new Error(`Content page cannot have a HTML entry: ${entry}`);
+    }
+    if (name === "background") {
+      throw new Error(`Background page cannot have a HTML entry: ${entry}`);
+    }
+
+    return buildHtmlPage(name, entry);
+  }
+  if (ext === "ts"
+   || ext === "tsx"
+   || ext === "js"
+   || ext === "jsx") {
+    return buildJSPage(name, entry);
+  }
+
+  throw new Error(`Unknown entry point extension: ${entry} ${ext}`);
+}
+
+function buildHtmlPage(name: string, entry: string) {
+  return build({
+    entryPoints: [entry],
+    bundle: true,
+    outdir: `dist/${name}`,
+    sourcemap: true,
+    minify: true,
+    target: ["chrome58", "firefox57", "safari11", "edge16"],
+    loader: {
+      ".png": "dataurl",
+      ".webp": "dataurl",
+      ".jpeg": "dataurl",
+      ".svg": "dataurl",
+      ".json": "json",
+    },
+    plugins: [
+      html({
+        entryNames: "[name]-[hash]",
+      }),
+    ],
+  });
+}
+
+function buildJSPage(name: string, entry: string) {
+  return build({
+    entryPoints: [entry],
+    bundle: true,
+    outdir: `dist/${name}`,
+    sourcemap: true,
+    minify: true,
+    target: ["chrome58", "firefox57", "safari11", "edge16"],
+    loader: {
+      ".png": "dataurl",
+      ".webp": "dataurl",
+      ".jpeg": "dataurl",
+      ".svg": "dataurl",
+      ".json": "json",
+    },
+  });
+}
+
+async function main() {
+  for (const [name, entry] of Object.entries(getPageInputs())) {
+    await buildPage(name, entry);
   }
 }
 
-Init();
+main();

@@ -9,7 +9,7 @@ const manifest: ManifestTypeV2 = {
   icons: {
     "128": "icon-128.png",
   },
-  web_accessible_resources: ["contentStyle.css", "icon-128.png", "icon-34.png"],
+  web_accessible_resources: ["contentStyle.css", "icon-128.png", "icon-34.png", "assets/*"],
 };
 
 function getManifestV2(folders: string[]): ManifestTypeV2 {
@@ -42,6 +42,7 @@ function getManifestV2(folders: string[]): ManifestTypeV2 {
         matches: ["http://*/*", "https://*/*", "<all_urls>"],
         js: ["src/pages/content/index.js"],
         css: ["contentStyle.css"],
+        
       },
     ];
   }
