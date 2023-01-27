@@ -1,5 +1,8 @@
-import pkg from "../../package.json";
-import { ManifestTypeV2 } from "./v2-type";
+import { createRequire } from "node:module";
+import { ManifestTypeV2 } from './v2-type.mjs';
+
+const require = createRequire(import.meta.url);
+const pkg = require("../../package.json");
 
 const manifest: ManifestTypeV2 = {
   manifest_version: 2,

@@ -1,6 +1,8 @@
-import { object } from 'prop-types';
-import pkg from '../../package.json';
-import { ManifestTypeV3 } from './v3-type';
+import { createRequire } from "node:module";
+import { ManifestTypeV3 } from './v3-type.mjs';
+
+const require = createRequire(import.meta.url);
+const pkg = require("../../package.json");
 
 const manifest: ManifestTypeV3 = {
   manifest_version: 3,

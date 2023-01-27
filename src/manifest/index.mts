@@ -1,5 +1,5 @@
-import getManifestV2 from "./v2";
-import getManifestV3 from "./v3";
+import getManifestV2 from "./v2.mjs";
+import getManifestV3 from "./v3.mjs";
 
 export function getManifest(version: 2 | 3, pageDirMap: { [x: string]: any }) {
   if (version === 2) {

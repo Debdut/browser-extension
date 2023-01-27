@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import { build } from "esbuild";
 import { html } from "@esbuilder/html";
 
-import { getManifest } from "../src/manifest";
+import { getManifest } from "../src/manifest/index.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
