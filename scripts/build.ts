@@ -1,7 +1,8 @@
 import fs from "fs";
-import { dirname, resolve } from "path";
+import { basename, dirname, relative, resolve } from "path";
 import { fileURLToPath } from "url";
 
+import fse from "fs-extra";
 import { build } from "esbuild";
 import { html } from "@esbuilder/html";
 
@@ -55,6 +56,12 @@ function getPageDirMap() {
   });
 
   return pageDirMap;
+}
+
+// get name from filename
+// index.x.html -> index.x
+function getName(path: string) {
+  return basename(path).split(".").slice(0, -1).join(".");
 }
 
 // get extension from path
@@ -125,14 +132,40 @@ function buildJSPage(name: string, entry: string, outdir: string) {
   });
 }
 
+function getDistPagePath(name: string, path: string, version: 2 | 3): string {
+  // src/pages/popup/index.html -> dist/v3/popup/index-<hash>.html
+  const fileName = basename(path);
+  const ext = getExtension(fileName);
+  const distExt = (ext === "html") ? "html" : "js";
+  const fileNameWOExt = getName(fileName);
+  const regex = new RegExp(
+    `${fileNameWOExt}(-[A-z0-9]*)?\.${distExt}`
+  );
+  
+  const extensionDir = resolve(OutDir, `v${version}`);
+  const pageDir = resolve(extensionDir, name);
+  const pageFiles = fs.readdirSync(pageDir);
+  const pageFile = pageFiles.find((file) => regex.test(file));
+  if (!pageFile) {
+    throw new Error(`Could not find generated entry for page ${name}`);
+  }
+  return relative(
+    extensionDir,
+    resolve(pageDir, pageFile)
+  );
+}
+
+async function copyPublicFiles(version: 2 | 3) {
+  const extensionDir = resolve(OutDir, `v${version}`);
+  await fse.copy(PublicDir, extensionDir);
+}
+
 async function Build(version: 2 | 3) {
   const outdir = resolve(OutDir, `v${version}`);
   const pageDirMap = getPageDirMap();
-  const manifest = getManifest(version, pageDirMap);
 
   for (const [name, entry] of Object.entries(pageDirMap)) {
-    const entryRelative = entry
-      ?.replace(RootDir + "/", "");
+    const entryRelative = relative(RootDir, entry);
 
     console.log(`Building ${name} from ${entryRelative}:`);
     console.time(name);
@@ -140,7 +173,14 @@ async function Build(version: 2 | 3) {
     await buildPage(name, entryRelative, outdir);
 
     console.timeEnd(name);
+
+    const pageDist = getDistPagePath(name, entryRelative, version);
+    pageDirMap[name] = pageDist;
   }
+
+  copyPublicFiles(version);
+
+  const manifest = getManifest(version, pageDirMap);
 
   fs.writeFileSync(
     resolve(outdir, "manifest.json"),
