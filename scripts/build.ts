@@ -260,17 +260,19 @@ function Clean(version?: 2 | 3) {
   fse.removeSync(OutDir);
 }
 
-async function Dev(versions: (2 | 3)[]) {
+async function DevAlt(versions: (2 | 3)[]) {
   if (versions.length === 0) {
     return;
   }
 
   let version = versions[0];
 
-  Clean();
-  Build(versions, true);
+  console.clear();
 
-  const pageDirMap = getPageDirMap();
+  Clean();
+  await Build(versions, true);
+
+  console.log("Watching for changes...\n");
 
   fs.watch(SrcDir, { recursive: true }, async (event, filename) => {
 
@@ -283,35 +285,67 @@ async function Dev(versions: (2 | 3)[]) {
 
       const isDir = fs.lstatSync(resolve(SrcDir, ...root))
         .isDirectory();
-
-      if (isDir) {
-        const extDir = resolve(OutDir, `v${version}`);
-        const entry = getPageEntry(root[1]);
-
-        if (entry) {
-          fse.removeSync(resolve(extDir, root[1]));
-          console.log(resolve(extDir, root[1]));
-          await buildPage(
-            root[1],
-            entry,
-            extDir,
-            true
-          );
-        }
-
-        if (versions.length > 1) {
-          version = versions[1];
-          fse.removeSync(resolve(OutDir, `v${version}`, root[1]));
-          console.log(resolve(OutDir, `v${version}`, root[1]));
-          fse.copySync(
-            resolve(OutDir, `v${versions[0]}`, root[1]),
-            resolve(OutDir, `v${version}`, root[1])
-          );
-        }
+      
+      if (!isDir) {
+        return;
       }
+
+      const extDir = resolve(OutDir, `v${version}`);
+      const entry = getPageEntry(root[1]);
+
+      if (!entry) {
+        return;
+      }
+
+      const entryRelative = relative(RootDir, entry);
+
+      console.clear();
+
+      fse.removeSync(resolve(extDir, root[1]));
+
+      await buildPage(
+        root[1],
+        entryRelative,
+        extDir,
+        true
+      );
+
+      if (versions.length === 1) {
+        return;
+      }
+
+      version = versions[1];
+
+      fse.removeSync(resolve(OutDir, `v${version}`, root[1]));
+
+      fse.copySync(
+        resolve(OutDir, `v${versions[0]}`, root[1]),
+        resolve(OutDir, `v${version}`, root[1])
+      );
+
+      console.log("Watching for changes...\n");
     }
   });
 }
 
-// Build([2, 3]);
-Dev([2,3]);
+async function Dev(versions: (2 | 3)[]) {
+  if (versions.length === 0) {
+    return;
+  }
+
+  console.clear();
+
+  Clean();
+  await Build(versions, true);
+
+  console.log("Watching for changes...\n");
+
+  fs.watch(SrcDir, { recursive: true }, async (event, filename) => {
+    console.clear();
+
+    Clean();
+    await Build(versions, true);
+
+    console.log("Watching for changes...\n");
+  });
+}
