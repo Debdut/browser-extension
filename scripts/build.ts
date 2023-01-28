@@ -71,6 +71,7 @@ function getExtension(path: string) {
 
 function buildPage(name: string, entry: string, outdir: string) {
   const ext = getExtension(entry);
+
   if (ext === "html") {
     if (name === "content") {
       throw new Error(`Content page cannot have a HTML entry: ${entry}`);
@@ -81,6 +82,7 @@ function buildPage(name: string, entry: string, outdir: string) {
 
     return buildHtmlPage(name, entry, outdir);
   }
+  
   if (ext === "ts"
    || ext === "tsx"
    || ext === "js"
@@ -91,8 +93,11 @@ function buildPage(name: string, entry: string, outdir: string) {
   throw new Error(`Unknown entry point extension: ${entry} ${ext}`);
 }
 
-function buildHtmlPage(name: string, entry: string, outdir: string) {
-  return build({
+async function buildHtmlPage(name: string, entry: string, outdir: string) {
+  const prompt = `Building "${name}" from ${entry}:`;
+  console.time(prompt);
+
+  const out = await build({
     entryPoints: [entry],
     bundle: true,
     outdir: resolve(outdir, name),
@@ -112,10 +117,17 @@ function buildHtmlPage(name: string, entry: string, outdir: string) {
       }),
     ],
   });
+
+  console.timeEnd(prompt);
+  
+  return out;
 }
 
-function buildJSPage(name: string, entry: string, outdir: string) {
-  return build({
+async function buildJSPage(name: string, entry: string, outdir: string) {
+  const prompt = `Building "${name}" from ${entry}:`;
+  console.time(prompt);
+
+  const out =  await build({
     entryPoints: [entry],
     bundle: true,
     outdir: resolve(outdir, name),
@@ -130,6 +142,10 @@ function buildJSPage(name: string, entry: string, outdir: string) {
       ".json": "json",
     },
   });
+
+  console.timeEnd(prompt);
+
+  return out;
 }
 
 function getDistPagePath(name: string, path: string, version: 2 | 3): string {
@@ -142,50 +158,83 @@ function getDistPagePath(name: string, path: string, version: 2 | 3): string {
     `${fileNameWOExt}(-[A-z0-9]*)?\.${distExt}`
   );
   
-  const extensionDir = resolve(OutDir, `v${version}`);
-  const pageDir = resolve(extensionDir, name);
+  const extDir = resolve(OutDir, `v${version}`);
+  const pageDir = resolve(extDir, name);
   const pageFiles = fs.readdirSync(pageDir);
   const pageFile = pageFiles.find((file) => regex.test(file));
   if (!pageFile) {
     throw new Error(`Could not find generated entry for page ${name}`);
   }
   return relative(
-    extensionDir,
+    extDir,
     resolve(pageDir, pageFile)
   );
 }
 
-async function copyPublicFiles(version: 2 | 3) {
-  const extensionDir = resolve(OutDir, `v${version}`);
-  await fse.copy(PublicDir, extensionDir);
+async function CopyPublicFiles(version: 2 | 3) {
+  const extDir = resolve(OutDir, `v${version}`);
+
+  await fse.copy(PublicDir, extDir);
 }
 
-async function Build(version: 2 | 3) {
-  const outdir = resolve(OutDir, `v${version}`);
-  const pageDirMap = getPageDirMap();
+function BuildManifest(version: 2 | 3, pageDirMap: { [x: string]: any }) {
+  const extDir = resolve(OutDir, `v${version}`);
+  const pageDistMap: { [x: string]: any } = {};
 
   for (const [name, entry] of Object.entries(pageDirMap)) {
     const entryRelative = relative(RootDir, entry);
-
-    console.log(`Building ${name} from ${entryRelative}:`);
-    console.time(name);
-
-    await buildPage(name, entryRelative, outdir);
-
-    console.timeEnd(name);
-
     const pageDist = getDistPagePath(name, entryRelative, version);
-    pageDirMap[name] = pageDist;
+    pageDistMap[name] = pageDist;
   }
 
-  copyPublicFiles(version);
-
-  const manifest = getManifest(version, pageDirMap);
+  const manifest = getManifest(version, pageDistMap);
 
   fs.writeFileSync(
-    resolve(outdir, "manifest.json"),
+    resolve(extDir, "manifest.json"),
     JSON.stringify(manifest, null, 2),
   );
 }
 
-Build(3);
+async function BuildPages(version: 2 | 3,  pageDirMap: { [x: string]: any }) {
+  const extDir = resolve(OutDir, `v${version}`);
+  const promises: Promise<any>[] = [];
+
+  for (const [name, entry] of Object.entries(pageDirMap)) {
+    const entryRelative = relative(RootDir, entry);
+
+    promises.push(
+      buildPage(name, entryRelative, extDir)
+    );
+  }
+
+  await Promise.all(promises);
+}
+
+async function Build(...versions: (2 | 3)[]) {
+  const pageDirMap = getPageDirMap();
+
+  if (versions.length === 0) {
+    return;
+  }
+
+  let version = versions[0];
+
+  await Promise.all([
+    BuildPages(version, pageDirMap),
+    CopyPublicFiles(version),
+  ]);
+
+  if (versions.length > 1) {
+    version = versions[1];
+    fse.copySync(
+      resolve(OutDir, `v${versions[0]}`),
+      resolve(OutDir, `v${version}`)
+    );
+  }
+
+  for (const v of versions.slice(0, 2)) {
+    BuildManifest(v, pageDirMap);
+  }
+}
+
+Build(2, 3);
