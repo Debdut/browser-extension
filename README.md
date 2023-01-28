@@ -1,25 +1,21 @@
-# Browser Extension Template [![Generic badge](https://img.shields.io/twitter/follow/kdebdut?style=social)](https://twitter.com/KDebdut)
+# Browser Extension Template
 
-## w/ React Preact Typescript
+## w/ React Preact Typescript ESBuild
 
 ![Generic badge](https://img.shields.io/badge/build-success-brightgreen.svg)
 
-> An out of the box, Browser Extension Template with fast Vite builds, support for React, Preact, Typescript, Manifest V3/V2 support and multi browser build including Chrome, Firefox, Safari, Edge, Brave.
+> Browser Extension Template with ESbuild builds, support for React, Preact, Typescript, Tailwind, Manifest V3/V2 support and multi browser build including Chrome, Firefox, Safari, Edge, Brave.
 
 ## Builtin
 
-- Manifest v3/v2
-- Multi Browser build including Chrome, Firefox, Safari, Edge, Brave
-- Content Script
-- Background Page or Service Worker
-- Popup Page
-- Options Page
-- Devtools Page
-- Newtab Page
-- Automatically opens browser
-- Runs multiple browsers in parallel
-- Autoreloads browser
-- Saves browser profiles for next start
+- Fast 100ms builds: ESBuild
+- Manifest v3/v2 in TS
+- 17+ Browsers Support
+- 8+ Pages: content, bookmarks, popup, ...
+- Auto Opens Browser
+- Run Multiple Browsers in Parallel
+- Autoreloads Browser
+- Isolated Browser Profiles
 
  ## Start Commands
 
@@ -30,17 +26,18 @@ npm run start [browsers]
 # npm run start chrome firefox brave safari
 ```
 
-That's it, if you got the browsers in the start command installed, it automatically builds for that, starts all of them, loads the extensions and reloads them on change. Vite makes sure the builds and reloads are really fast.
+That's it, if you got the browsers in the start command installed, it automatically builds for that, starts all of them, loads the extensions and reloads them on change. ESBuild makes sure the builds and reloads are really fast.
 
 See browser support below.
 
 ## Supports
 
-- Vite 3
+- ESBuild
 - React 18
 - Typescript
 - Preact X
 - PostCSS
+- TailwindCSS
 
 Simply remove or don't use the technologies you don't like.
 
@@ -56,18 +53,7 @@ Scripts & Pages (located in `src/pages`):
 - newtab
 - panel
 
-Just delete the folders of pages you don't require, the builds scripts detects automatically what's in there and adjusts the manifest automatically. In each of the pages folder, the target main script is the first of
-
-- index.html
-- index.ts
-- index.tsx
-- index.js
-- index.jsx
-- main.html
-- main.ts
-- main.tsx
-- main.js
-- main.jsx
+Just delete the folders of pages you don't require, the builds scripts detects automatically what's in there and adjusts the manifest automatically.
 
 Browsers:
 - arc
@@ -94,20 +80,24 @@ Browsers with * stars get a build, but needs to be launched manually, and extens
 
 If you want webpack build, checkout the webpack branch.
 
-Updates:
+In each of the pages folder, the target main script is the first of
 
-- Webpack to Vite: 5x faster builds
-- Detects all browsers automatically
-- Automatic Manifest
-- All Extension Pages and Scripts Support
-- 17 browsers support
+- index.html
+- index.ts
+- index.tsx
+- index.js
+- index.jsx
+- main.html
+- main.ts
+- main.tsx
+- main.js
+- main.jsx
 
 ## Commands
 
 ```sh
 # Install packages
 npm install
-
 
 # Live Dev for multiple browsers
 npm run start [browser]
@@ -116,9 +106,6 @@ npm run start [browser]
 # Build for multiple browsers
 npm run build [browser]
 # npm run build chrome firefox safari
-
-# Clean Builds
-npm run clean
 ```
 
 ## Credits

@@ -1,10 +1,13 @@
 import fs from "fs";
 import { basename, dirname, relative, resolve, sep } from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
 import fse from "fs-extra";
 import { build } from "esbuild";
 import { html } from "@esbuilder/html";
+import concurrently from "concurrently";
+import { GetInstalledBrowsers, BrowserPath } from "get-installed-browsers";
 
 import { getManifest } from "../src/manifest/index.mjs";
 
@@ -222,7 +225,7 @@ async function BuildPages(version: 2 | 3,  pageDirMap: { [x: string]: any }, dev
   await Promise.all(promises);
 }
 
-async function Build(versions: (2 | 3)[], dev: boolean = false) {
+async function BuildVersionedExt(versions: (2 | 3)[], dev: boolean = false) {
   const pageDirMap = getPageDirMap();
 
   if (versions.length === 0) {
@@ -260,7 +263,7 @@ function Clean(version?: 2 | 3) {
   fse.removeSync(OutDir);
 }
 
-async function DevAlt(versions: (2 | 3)[]) {
+async function DevVersionedExtAlt(versions: (2 | 3)[]) {
   if (versions.length === 0) {
     return;
   }
@@ -270,7 +273,11 @@ async function DevAlt(versions: (2 | 3)[]) {
   console.clear();
 
   Clean();
-  await Build(versions, true);
+  try {
+    await BuildVersionedExt(versions, true);
+  } catch (error) {
+    console.error(error);
+  }
 
   console.log("Watching for changes...\n");
 
@@ -328,7 +335,7 @@ async function DevAlt(versions: (2 | 3)[]) {
   });
 }
 
-async function Dev(versions: (2 | 3)[]) {
+async function DevVersionedExt(versions: (2 | 3)[]) {
   if (versions.length === 0) {
     return;
   }
@@ -336,7 +343,11 @@ async function Dev(versions: (2 | 3)[]) {
   console.clear();
 
   Clean();
-  await Build(versions, true);
+  try {
+    await BuildVersionedExt(versions, true);
+  } catch (error) {
+    console.error(error);
+  }
 
   console.log("Watching for changes...\n");
 
@@ -344,8 +355,236 @@ async function Dev(versions: (2 | 3)[]) {
     console.clear();
 
     Clean();
-    await Build(versions, true);
+    try {
+      await BuildVersionedExt(versions, true);
+    } catch (error) {
+      console.error(error);
+    }
 
     console.log("Watching for changes...\n");
   });
 }
+
+function toKebabCase(str: string) {
+  return str.replace(/([a-z]) ([A-Z])/g, "$1-$2").toLowerCase();
+}
+
+function manifestVersion(browser: BrowserPath): 2 | 3 {
+  if (browser.type === "chrome") {
+    return 3;
+  }
+
+  return 2;
+}
+
+function GetArgs(): { browsers: string[], dev: boolean } {
+  if (process.argv.length < 3) {
+    console.log("Usage: npm run build [<browser>...]");
+    process.exit(1);
+  }
+  
+  if (process.argv[2] === "--dev"
+    && process.argv.length < 4) {
+    console.log("Usage: npm run dev [<browser>...]");
+    process.exit(0);
+  }
+  
+  let browsers: string[];
+  let dev = false;
+  
+  if (process.argv[2] === "--dev") {
+    browsers = process.argv
+      .splice(3);
+    dev = true;
+  } else {
+    browsers = process.argv
+      .splice(2);
+  }
+  
+  // uniq browsers
+  browsers = browsers
+    .reduce((acc, browser) => {
+      const browserName = browser.toLowerCase();
+      if (acc.indexOf(browserName) === -1) {
+        acc.push(browserName);
+      }
+      return acc;
+    }, [] as string[]);
+
+  return {
+    browsers,
+    dev,
+  };
+}
+
+function MatchInstalledBrowsers(browsers: string[]) {
+  const availableBrowsers = GetInstalledBrowsers();
+  const matchedBrowsers: BrowserPath[] = [];
+  
+  for (const availableBrowser of availableBrowsers) {
+    const availableBrowserName = toKebabCase(availableBrowser.name);
+    for (const browser of browsers) {
+      if (availableBrowserName === browser) {
+        matchedBrowsers.push(availableBrowser);
+      }
+    }
+  }
+
+  return matchedBrowsers;
+}
+
+function MatchExtVersions(browsers: BrowserPath[]) {
+  const versions: Set<2|3> = new Set();
+
+  for (const browser of browsers) {
+    versions.add(manifestVersion(browser));
+  }
+
+  return Array.from(versions);
+}
+
+function BuildBrowserExt(browsers: string[]) {
+  const matchedBrowsers = MatchInstalledBrowsers(browsers);
+
+  if (matchedBrowsers.length === 0) {
+    console.error("No browser found");
+    process.exit(1);
+  }
+
+  const versions = MatchExtVersions(matchedBrowsers);
+
+  BuildVersionedExt(versions);
+
+  for (const matchedBrowser of matchedBrowsers) {
+    const version = manifestVersion(matchedBrowser);
+    const inputDir = resolve(OutDir, `v${version}`);
+    const outDir = resolve(OutDir, toKebabCase(matchedBrowser.name));
+
+    fse.copySync(inputDir, outDir);
+  }
+}
+
+function CreateProfileRoot() {
+  // create tmp directory if not exists
+  const tmpDir = resolve(__dirname, "..", "tmp");
+  if (!fs.existsSync(tmpDir)) {
+    fs.mkdirSync(tmpDir);
+  }
+
+  const profileRoot = resolve(tmpDir, "profiles");
+  if (!fs.existsSync(profileRoot)) {
+    fs.mkdirSync(profileRoot);
+  }
+
+  return profileRoot;
+}
+
+function createProfile(browser: string, profileRoot: string) {
+  const profileDir = resolve(profileRoot, browser);
+
+  if (!fs.existsSync(profileDir)) {
+    fs.mkdirSync(profileDir);
+  }
+
+  return profileDir;
+}
+
+function getCommand(command: string, args: Record<string, string | null>) {
+  let fullCommand = command;
+
+  for (const [key, value] of Object.entries(args)) {
+    if (value) {
+      fullCommand += ` --${key}=${value}`;
+    } else {
+      fullCommand += ` --${key}`;
+    }
+  }
+
+  return fullCommand;
+}
+
+function LaunchCommand(browser: BrowserPath, profileDir: string) {
+  let command = "web-ext run";
+  const args: Record<string, string | null> = {
+    "start-url": "example.com",
+    "profile-create-if-missing": null,
+    "browser-console": null,
+    "keep-profile-changes": null,
+  };
+
+  if (browser.type === "firefox") {
+    args["source-dir"] = `"${resolve(__dirname, "..", "dist", "v2")}"`;
+    args["firefox-binary"] = `"${browser.path}"`;
+    args["firefox-profile"] = `"${profileDir}"`;
+
+    return getCommand(command, args);
+  }
+
+  if (browser.type === "chrome") {
+    args["source-dir"] = `"${resolve(__dirname, "..", "dist", "v3")}"`;
+    args["target"] = "chromium";
+    args["chromium-binary"] = `"${browser.path}"`;
+    args["chromium-profile"] = `"${profileDir}"`;
+
+    return getCommand(command, args);
+  }
+
+  if (browser.type === "safari") {
+    return "echo 'Safari reloading is not supported. Build in XCode and reload manually!'";
+  }
+
+  return;
+}
+
+function DevBrowserExt(browsers: string[]) {
+  const matchedBrowsers = MatchInstalledBrowsers(browsers);
+
+  if (matchedBrowsers.length === 0) {
+    console.error("No browser found");
+    process.exit(1);
+  }
+
+  const versions = MatchExtVersions(matchedBrowsers);
+
+  DevVersionedExt(versions);
+
+  const profileRoot = CreateProfileRoot();
+  const commands: string[] = [];
+
+  for (const matchedBrowser of matchedBrowsers) {
+    const profileDir = createProfile(toKebabCase(matchedBrowser.name), profileRoot);
+    const command = LaunchCommand(matchedBrowser, profileDir);
+
+    if (command) {
+      commands.push(command);
+    }
+  }
+
+  const { result } = concurrently(commands);
+
+  result
+    .then(() => {
+      console.log("All processes exited");
+      process.exit(0);
+    })
+    .catch((err) => {
+      for (const { command, exitCode } of err) {
+        if (exitCode !== 0) {
+          console.error(`${command.command}:\n exited with code ${exitCode}\n`);
+          throw new Error(command.error);
+        }
+      }
+    });
+}
+
+function Init() {
+  const { browsers, dev } = GetArgs();
+
+  if (dev) {
+    DevBrowserExt(browsers);
+  } else {
+    BuildBrowserExt(browsers);
+  }
+}
+
+Init();

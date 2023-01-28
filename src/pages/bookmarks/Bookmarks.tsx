@@ -1,6 +1,7 @@
-import React from 'react';
-import logo from '@assets/img/logo.svg';
-import './Bookmarks.css';
+import React from "react";
+
+import logo from "@assets/img/logo.svg";
+import "./Bookmarks.css";
 
 export default function Bookmarks(): JSX.Element {
   return (

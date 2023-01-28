@@ -9,13 +9,8 @@
     "url": "https://github.com/debdut/browser-extension.git"
   },
   "scripts": {
-    "start": "ts-node-esm scripts/start.ts",
-    "build": "ts-node-esm scripts/build.ts",
-    "clean": "rimraf dist",
-    "build:v2": "tsc --noEmit && vite build --config vite/v2.config.ts",
-    "build:v3": "tsc --noEmit && vite build --config vite/v3.config.ts",
-    "dev:v2": "vite build --watch --config vite/v2.config.ts",
-    "dev:v3": "vite build --watch --config vite/v3.config.ts"
+    "start": "ts-node-esm scripts/build.ts --dev",
+    "build": "ts-node-esm scripts/build.ts"
   },
   "type": "module",
   "dependencies": {

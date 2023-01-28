@@ -1,6 +1,7 @@
-import React from 'react';
-import logo from '@assets/img/logo.svg';
-import './History.css';
+import React from "react";
+
+import logo from "@assets/img/logo.svg";
+import "./History.css";
 
 export default function History(): JSX.Element {
   return (
