@@ -1,1 +1,1 @@
-console.log('background script loaded');
+console.log("Service Worker 👋");

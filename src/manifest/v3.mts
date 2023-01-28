@@ -10,11 +10,11 @@ const manifest: ManifestTypeV3 = {
   version: pkg.version,
   description: pkg.description,
   icons: {
-    "128": "icon-128.png",
+    "128": "public/icon-128.png",
   },
   web_accessible_resources: [
     {
-      resources: ["contentStyle.css", "icon-128.png", "icon-34.png", "assets/*"],
+      resources: ["public/*", "assets/*"],
       matches: [],
     },
   ],
@@ -43,7 +43,7 @@ function getManifestV3(pageDirMap: { [x: string]: any }): ManifestTypeV3 {
   if (pages.indexOf("popup") > -1) {
     manifest.action = {
       default_popup: pageDirMap["popup"],
-      default_icon: "icon-34.png",
+      default_icon: "public/icon-34.png",
     };
   }
   

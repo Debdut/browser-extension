@@ -1,5 +1,5 @@
 import fs from "fs";
-import { basename, dirname, relative, resolve } from "path";
+import { basename, dirname, relative, resolve, sep } from "path";
 import { fileURLToPath } from "url";
 
 import fse from "fs-extra";
@@ -20,8 +20,7 @@ const PublicDir = resolve(__dirname, "..", "public");
 
 const pageDirs = fs.readdirSync(pagesDir);
 
-function getPageDirMap() {
-  const pageDirMap: { [x: string]: any } = {};
+function getPageEntry(folder: string) {
   const entryPoints = [
     "index.html",
     "index.ts",
@@ -35,21 +34,23 @@ function getPageDirMap() {
     "main.jsx",
   ];
 
-  const getFirstExistingFile = (folder: string): string | undefined => {
-    for (const entryPoint of entryPoints) {
-      const file = resolve(pagesDir, folder, entryPoint);
-      if (fs.existsSync(file)) {
-        return file;
-      }
+  for (const entryPoint of entryPoints) {
+    const file = resolve(pagesDir, folder, entryPoint);
+    if (fs.existsSync(file)) {
+      return file;
     }
-  };
+  }
+}
+
+function getPageDirMap() {
+  const pageDirMap: { [x: string]: any } = {};
 
   pageDirs.forEach((folder) => {
     const pages = resolve(pagesDir, folder);
     if (!fs.statSync(pages).isDirectory()) {
       return;
     }
-    const entry = getFirstExistingFile(folder);
+    const entry = getPageEntry(folder);
     if (entry) {
       pageDirMap[folder] = entry;
     }
@@ -69,7 +70,7 @@ function getExtension(path: string) {
   return path.split(".").pop();
 }
 
-function buildPage(name: string, entry: string, outdir: string) {
+function buildPage(name: string, entry: string, outdir: string, dev = false) {
   const ext = getExtension(entry);
 
   if (ext === "html") {
@@ -80,20 +81,20 @@ function buildPage(name: string, entry: string, outdir: string) {
       throw new Error(`Background page cannot have a HTML entry: ${entry}`);
     }
 
-    return buildHtmlPage(name, entry, outdir);
+    return buildHtmlPage(name, entry, outdir, dev);
   }
   
   if (ext === "ts"
    || ext === "tsx"
    || ext === "js"
    || ext === "jsx") {
-    return buildJSPage(name, entry, outdir);
+    return buildJSPage(name, entry, outdir, dev);
   }
 
   throw new Error(`Unknown entry point extension: ${entry} ${ext}`);
 }
 
-async function buildHtmlPage(name: string, entry: string, outdir: string) {
+async function buildHtmlPage(name: string, entry: string, outdir: string, dev = false) {
   const prompt = `Building "${name}" from ${entry}:`;
   console.time(prompt);
 
@@ -101,7 +102,7 @@ async function buildHtmlPage(name: string, entry: string, outdir: string) {
     entryPoints: [entry],
     bundle: true,
     outdir: resolve(outdir, name),
-    sourcemap: true,
+    sourcemap: dev,
     minify: true,
     target: ["chrome58", "firefox57", "safari11", "edge16"],
     loader: {
@@ -123,7 +124,7 @@ async function buildHtmlPage(name: string, entry: string, outdir: string) {
   return out;
 }
 
-async function buildJSPage(name: string, entry: string, outdir: string) {
+async function buildJSPage(name: string, entry: string, outdir: string, dev: boolean = false) {
   const prompt = `Building "${name}" from ${entry}:`;
   console.time(prompt);
 
@@ -131,7 +132,7 @@ async function buildJSPage(name: string, entry: string, outdir: string) {
     entryPoints: [entry],
     bundle: true,
     outdir: resolve(outdir, name),
-    sourcemap: true,
+    sourcemap: dev,
     minify: true,
     target: ["chrome58", "firefox57", "safari11", "edge16"],
     loader: {
@@ -172,12 +173,21 @@ function getDistPagePath(name: string, path: string, version: 2 | 3): string {
 }
 
 async function CopyPublicFiles(version: 2 | 3) {
-  const extDir = resolve(OutDir, `v${version}`);
+  const prompt = `Copying public files for v${version}`;
+  console.time(prompt);
 
-  await fse.copy(PublicDir, extDir);
+  const extDir = resolve(OutDir, `v${version}`);
+  const extPublicDir = resolve(extDir, "public");
+
+  await fse.copy(PublicDir, extPublicDir);
+
+  console.timeEnd(prompt);
 }
 
 function BuildManifest(version: 2 | 3, pageDirMap: { [x: string]: any }) {
+  const prompt = `Building manifest for v${version}`;
+  console.time(prompt);
+
   const extDir = resolve(OutDir, `v${version}`);
   const pageDistMap: { [x: string]: any } = {};
 
@@ -193,9 +203,11 @@ function BuildManifest(version: 2 | 3, pageDirMap: { [x: string]: any }) {
     resolve(extDir, "manifest.json"),
     JSON.stringify(manifest, null, 2),
   );
+
+  console.timeEnd(prompt);
 }
 
-async function BuildPages(version: 2 | 3,  pageDirMap: { [x: string]: any }) {
+async function BuildPages(version: 2 | 3,  pageDirMap: { [x: string]: any }, dev: boolean = false) {
   const extDir = resolve(OutDir, `v${version}`);
   const promises: Promise<any>[] = [];
 
@@ -203,14 +215,14 @@ async function BuildPages(version: 2 | 3,  pageDirMap: { [x: string]: any }) {
     const entryRelative = relative(RootDir, entry);
 
     promises.push(
-      buildPage(name, entryRelative, extDir)
+      buildPage(name, entryRelative, extDir, dev)
     );
   }
 
   await Promise.all(promises);
 }
 
-async function Build(...versions: (2 | 3)[]) {
+async function Build(versions: (2 | 3)[], dev: boolean = false) {
   const pageDirMap = getPageDirMap();
 
   if (versions.length === 0) {
@@ -220,7 +232,7 @@ async function Build(...versions: (2 | 3)[]) {
   let version = versions[0];
 
   await Promise.all([
-    BuildPages(version, pageDirMap),
+    BuildPages(version, pageDirMap, dev),
     CopyPublicFiles(version),
   ]);
 
@@ -237,4 +249,69 @@ async function Build(...versions: (2 | 3)[]) {
   }
 }
 
-Build(2, 3);
+function Clean(version?: 2 | 3) {
+  if (version) {
+    const extDir = resolve(OutDir, `v${version}`);
+    fse.removeSync(extDir);
+
+    return;
+  }
+
+  fse.removeSync(OutDir);
+}
+
+async function Dev(versions: (2 | 3)[]) {
+  if (versions.length === 0) {
+    return;
+  }
+
+  let version = versions[0];
+
+  Clean();
+  Build(versions, true);
+
+  const pageDirMap = getPageDirMap();
+
+  fs.watch(SrcDir, { recursive: true }, async (event, filename) => {
+
+    let root = [filename
+      .split(sep)[0]];
+    
+    if (root[0] === "pages") {
+      root.push(filename
+        .split(sep)[1]);
+
+      const isDir = fs.lstatSync(resolve(SrcDir, ...root))
+        .isDirectory();
+
+      if (isDir) {
+        const extDir = resolve(OutDir, `v${version}`);
+        const entry = getPageEntry(root[1]);
+
+        if (entry) {
+          fse.removeSync(resolve(extDir, root[1]));
+          console.log(resolve(extDir, root[1]));
+          await buildPage(
+            root[1],
+            entry,
+            extDir,
+            true
+          );
+        }
+
+        if (versions.length > 1) {
+          version = versions[1];
+          fse.removeSync(resolve(OutDir, `v${version}`, root[1]));
+          console.log(resolve(OutDir, `v${version}`, root[1]));
+          fse.copySync(
+            resolve(OutDir, `v${versions[0]}`, root[1]),
+            resolve(OutDir, `v${version}`, root[1])
+          );
+        }
+      }
+    }
+  });
+}
+
+// Build([2, 3]);
+Dev([2,3]);
