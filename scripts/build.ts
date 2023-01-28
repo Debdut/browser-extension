@@ -1,7 +1,6 @@
 import fs from "fs";
 import { basename, dirname, relative, resolve, sep } from "path";
 import { fileURLToPath } from "url";
-import { execSync } from "child_process";
 
 import fse from "fs-extra";
 import { build } from "esbuild";
@@ -263,7 +262,7 @@ function Clean(version?: 2 | 3) {
   fse.removeSync(OutDir);
 }
 
-async function DevVersionedExtAlt(versions: (2 | 3)[]) {
+async function DevVersionedExt(versions: (2 | 3)[]) {
   if (versions.length === 0) {
     return;
   }
@@ -331,37 +330,9 @@ async function DevVersionedExtAlt(versions: (2 | 3)[]) {
       );
 
       console.log("Watching for changes...\n");
+
+      version = versions[0];
     }
-  });
-}
-
-async function DevVersionedExt(versions: (2 | 3)[]) {
-  if (versions.length === 0) {
-    return;
-  }
-
-  console.clear();
-
-  Clean();
-  try {
-    await BuildVersionedExt(versions, true);
-  } catch (error) {
-    console.error(error);
-  }
-
-  console.log("Watching for changes...\n");
-
-  fs.watch(SrcDir, { recursive: true }, async (event, filename) => {
-    console.clear();
-
-    Clean();
-    try {
-      await BuildVersionedExt(versions, true);
-    } catch (error) {
-      console.error(error);
-    }
-
-    console.log("Watching for changes...\n");
   });
 }
 
@@ -385,7 +356,7 @@ function GetArgs(): { browsers: string[], dev: boolean } {
   
   if (process.argv[2] === "--dev"
     && process.argv.length < 4) {
-    console.log("Usage: npm run dev [<browser>...]");
+    console.log("Usage: npm run start [<browser>...]");
     process.exit(0);
   }
   
