@@ -17,13 +17,19 @@
 - Autoreloads Browser
 - Isolated Browser Profiles
 
- ## Start Commands
+ ## Commands
 
 ```sh
+# Install packages
 npm install
-npm run start [browsers]
-# example
-# npm run start chrome firefox brave safari
+
+# Live Dev for multiple browsers
+npm run start [browser]
+# npm run start chrome firefox safari
+
+# Build for multiple browsers
+npm run build [browser]
+# npm run build chrome firefox safari
 ```
 
 That's it, if you got the browsers in the start command installed, it automatically builds for that, starts all of them, loads the extensions and reloads them on change. ESBuild makes sure the builds and reloads are really fast.
@@ -92,21 +98,6 @@ In each of the pages folder, the target main script is the first of
 - main.tsx
 - main.js
 - main.jsx
-
-## Commands
-
-```sh
-# Install packages
-npm install
-
-# Live Dev for multiple browsers
-npm run start [browser]
-# npm run start chrome firefox safari
-
-# Build for multiple browsers
-npm run build [browser]
-# npm run build chrome firefox safari
-```
 
 ## Credits
 
