@@ -18,6 +18,9 @@ const manifest: ManifestTypeV3 = {
       matches: [],
     },
   ],
+  host_permissions: [
+    "https://localhost/*"
+  ],
 };
 
 function getManifestV3(pageDirMap: { [x: string]: any }): ManifestTypeV3 {

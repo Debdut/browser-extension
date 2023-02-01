@@ -1,12 +1,12 @@
 {
-  "name": "browser-extension",
-  "displayName": "Browser Extension",
+  "name": "relic",
+  "displayName": "Relic",
   "version": "2.0.0",
-  "description": "Browser Extension Boilerplate",
+  "description": "The Personal Search Engine",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/debdut/browser-extension.git"
+    "url": "https://github.com/debdut/relic.git"
   },
   "scripts": {
     "start": "ts-node-esm scripts/build.ts --dev",
@@ -14,6 +14,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@mozilla/readability": "^0.4.2",
     "@types/webextension-polyfill": "^0.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
