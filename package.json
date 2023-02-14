@@ -31,6 +31,7 @@
     "autoprefixer": "^10.4.13",
     "concurrently": "^7.6.0",
     "esbuild": "^0.17.4",
+    "esbuild-style-plugin": "^1.6.1",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.27.5",

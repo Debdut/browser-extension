@@ -1,14 +1,18 @@
 import fs from "fs";
 import { basename, dirname, relative, resolve, sep } from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "node:module";
 
 import fse from "fs-extra";
 import { build } from "esbuild";
 import { html } from "@esbuilder/html";
 import concurrently from "concurrently";
 import { GetInstalledBrowsers, BrowserPath } from "get-installed-browsers";
+import stylePlugin from "esbuild-style-plugin";
 
 import { getManifest } from "../src/manifest/index.mjs";
+
+const require = createRequire(import.meta.url);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -118,6 +122,7 @@ async function buildHtmlPage(name: string, entry: string, outdir: string, dev = 
       html({
         entryNames: "[name]-[hash]",
       }),
+      stylePlugin(),
     ],
   });
 
@@ -144,6 +149,9 @@ async function buildJSPage(name: string, entry: string, outdir: string, dev: boo
       ".svg": "dataurl",
       ".json": "json",
     },
+    plugins: [
+      stylePlugin(),
+    ],
   });
 
   console.timeEnd(prompt);
@@ -279,6 +287,25 @@ async function DevVersionedExt(versions: (2 | 3)[]) {
   }
 
   console.log("Watching for changes...\n");
+
+  fs.watch(PublicDir, { recursive: true }, async (event, filename) => {
+    const extDir = resolve(OutDir, `v${version}`);
+    const extPublicDir = resolve(extDir, "public");
+    const outFile = resolve(extPublicDir, filename);
+    const inFile = resolve(PublicDir, filename);
+
+    console.clear();
+
+    console.log("Copied public file: ", inFile.replace(RootDir, "").substring(1));
+
+    if (fs.existsSync(outFile)) {
+      fse.removeSync(outFile);
+    }
+
+    fse.copySync(inFile, outFile);
+
+    console.log("Watching for changes...\n");
+  });
 
   fs.watch(SrcDir, { recursive: true }, async (event, filename) => {
 
