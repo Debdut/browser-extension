@@ -25,3 +25,27 @@ declare module "*.json" {
   const content: string;
   export default content;
 }
+
+// if you use css
+declare module "*.module.css" {
+  const classes: { [key: string]: string };
+  export default classes;
+}
+
+// if you use scss
+declare module "*.module.scss" {
+  const classes: { [key: string]: string };
+  export default classes;
+}
+
+// if you use less
+declare module "*.module.less" {
+  const classes: { [key: string]: string };
+  export default classes;
+}
+
+// if you use pcss
+declare module "*.module.pcss" {
+  const classes: { [key: string]: string };
+  export default classes;
+}

@@ -15,7 +15,7 @@ const manifest: ManifestTypeV3 = {
   web_accessible_resources: [
     {
       resources: ["public/*", "assets/*"],
-      matches: [],
+      matches: ["<all_urls>"],
     },
   ],
 };
@@ -70,6 +70,9 @@ function getManifestV3(pageDirMap: { [x: string]: any }): ManifestTypeV3 {
       {
         matches: ["http://*/*", "https://*/*", "<all_urls>"],
         js: [pageDirMap["content"]],
+        css: pageDirMap["content-css"],
+
+        run_at: "document_start",
       },
     ];
   }

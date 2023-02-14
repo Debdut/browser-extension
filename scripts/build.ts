@@ -122,7 +122,15 @@ async function buildHtmlPage(name: string, entry: string, outdir: string, dev = 
       html({
         entryNames: "[name]-[hash]",
       }),
-      stylePlugin(),
+      stylePlugin({
+        postcss: {
+          plugins: [
+            require("postcss-import"),
+            require("tailwindcss"),
+            require("autoprefixer"),
+          ],
+        }
+      }),
     ],
   });
 
@@ -150,7 +158,15 @@ async function buildJSPage(name: string, entry: string, outdir: string, dev: boo
       ".json": "json",
     },
     plugins: [
-      stylePlugin(),
+      stylePlugin({
+        postcss: {
+          plugins: [
+            require("postcss-import"),
+            require("tailwindcss"),
+            require("autoprefixer"),
+          ],
+        }
+      }),
     ],
   });
 
@@ -182,6 +198,23 @@ function getDistPagePath(name: string, path: string, version: 2 | 3): string {
   );
 }
 
+function getDistCSSPath(name: string, path: string, version: 2 | 3): string[] {
+  const extDir = resolve(OutDir, `v${version}`);
+  const pageDir = resolve(extDir, name);
+  const pageFiles = fs.readdirSync(pageDir);
+  const cssPaths: string[] = [];
+
+  for (const file of pageFiles) {
+    if (file.endsWith(".css")) {
+      cssPaths.push(relative(
+        extDir, resolve(pageDir, file)
+      ));
+    }
+  }
+
+  return cssPaths;
+}
+
 async function CopyPublicFiles(version: 2 | 3) {
   const prompt = `Copying public files for v${version}`;
   console.time(prompt);
@@ -204,7 +237,10 @@ function BuildManifest(version: 2 | 3, pageDirMap: { [x: string]: any }) {
   for (const [name, entry] of Object.entries(pageDirMap)) {
     const entryRelative = relative(RootDir, entry);
     const pageDist = getDistPagePath(name, entryRelative, version);
+    const cssDist = getDistCSSPath(name, entryRelative, version);
+
     pageDistMap[name] = pageDist;
+    pageDistMap[`${name}-css`] = cssDist;
   }
 
   const manifest = getManifest(version, pageDistMap);

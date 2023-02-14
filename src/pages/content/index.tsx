@@ -29,4 +29,4 @@ function init() {
   root.render(<Content />);
 }
 
-init();
+document.addEventListener("DOMContentLoaded", init);
