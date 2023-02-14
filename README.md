@@ -44,6 +44,7 @@ See browser support below.
 - Preact X
 - PostCSS
 - TailwindCSS
+- CSS Modules
 
 Simply remove or don't use the technologies you don't like.
 
@@ -98,6 +99,8 @@ In each of the pages folder, the target main script is the first of
 - main.tsx
 - main.js
 - main.jsx
+
+Put your injecting scripts in `public` directory that needs to imported via the `chrome.runtime.getURL` API.
 
 ## Credits
 
