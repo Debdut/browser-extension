@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "types": ["vite/client", "node"],
+    "types": ["node"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "skipLibCheck": true,
@@ -19,9 +19,9 @@
     "paths": {
       "@src/*": ["src/*"],
       "@assets/*": ["src/assets/*"],
-      "@pages/*": ["src/pages/*"]
+      "@pages/*": ["src/pages/*"],
+      "@lib/*": ["src/lib/*"],
     }
   },
-  "include": ["src",
-    "utils", "vite.config.ts", "vite/make-manifest.ts", "vite/copy-content-style.ts"],
+  "include": ["src", "scripts"],
 }
