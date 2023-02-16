@@ -71,7 +71,6 @@ function getManifestV3(pageDirMap: { [x: string]: any }): ManifestTypeV3 {
         matches: ["http://*/*", "https://*/*", "<all_urls>"],
         js: [pageDirMap["content"]],
         css: pageDirMap["content-css"],
-
         run_at: "document_start",
       },
     ];
