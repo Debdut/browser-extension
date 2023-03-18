@@ -40,6 +40,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "fs-extra": "^11.1.0",
     "get-installed-browsers": "^0.1.7",
+    "node-watch": "^0.7.3",
     "postcss": "^8.4.21",
     "rimraf": "^4.1.1",
     "tailwindcss": "^3.2.6",

@@ -9,6 +9,7 @@ import { html } from "@esbuilder/html";
 import concurrently from "concurrently";
 import { GetInstalledBrowsers, BrowserPath } from "get-installed-browsers";
 import stylePlugin from "esbuild-style-plugin";
+import watch from "node-watch";
 
 import { getManifest } from "../src/manifest/index.mjs";
 
@@ -101,7 +102,7 @@ function buildPage(name: string, entry: string, outdir: string, dev = false) {
 }
 
 async function buildHtmlPage(name: string, entry: string, outdir: string, dev = false) {
-  const prompt = `Building "${name}" from ${entry}:`;
+  const prompt = `Building "${name}" from ${entry}`;
   console.time(prompt);
 
   const out = await build({
@@ -324,32 +325,38 @@ async function DevVersionedExt(versions: (2 | 3)[]) {
 
   console.log("Watching for changes...\n");
 
-  fs.watch(PublicDir, { recursive: true }, async (event, filename) => {
+  watch(PublicDir, { recursive: true }, async (event, filePath) => {
+    const relativeFilePath = filePath.replace(PublicDir + sep, "");
+
     const extDir = resolve(OutDir, `v${version}`);
     const extPublicDir = resolve(extDir, "public");
-    const outFile = resolve(extPublicDir, filename);
-    const inFile = resolve(PublicDir, filename);
+    const outFile = resolve(extPublicDir, relativeFilePath);
 
     console.clear();
-
-    console.log("Copied public file: ", inFile.replace(RootDir, "").substring(1));
 
     if (fs.existsSync(outFile)) {
       fse.removeSync(outFile);
     }
 
-    fse.copySync(inFile, outFile);
+    if (event == "remove") {
+      console.log("Removed public file or folder: ", filePath.replace(RootDir, "").substring(1));
+      return;
+    }
+
+    fse.copySync(filePath, outFile);
+    console.log("Copied public file or folder: ", filePath.replace(RootDir, "").substring(1));
 
     console.log("Watching for changes...\n");
   });
 
-  fs.watch(SrcDir, { recursive: true }, async (event, filename) => {
+  watch(SrcDir, { recursive: true }, async (event, filePath) => {
+    const relativeFilePath = filePath.replace(SrcDir + sep, "");
 
-    let root = [filename
+    let root = [relativeFilePath
       .split(sep)[0]];
     
     if (root[0] === "pages") {
-      root.push(filename
+      root.push(relativeFilePath
         .split(sep)[1]);
 
       const isDir = fs.lstatSync(resolve(SrcDir, ...root))
@@ -417,11 +424,12 @@ function GetArgs(): { browsers: string[], dev: boolean } {
     process.exit(1);
   }
   
-  if (process.argv[2] === "--dev"
-    && process.argv.length < 4) {
-    console.log("Usage: npm run start [<browser>...]");
-    process.exit(0);
-  }
+  // TODO: A non-crude way to run : npm run start with no browsers.
+  // if (process.argv[2] === "--dev"
+  //   && process.argv.length < 4) {
+  //   console.log("Usage: npm run start [<browser>...]");
+  //   process.exit(0);
+  // }
   
   let browsers: string[];
   let dev = false;
@@ -573,12 +581,12 @@ function LaunchCommand(browser: BrowserPath, profileDir: string) {
 function DevBrowserExt(browsers: string[]) {
   const matchedBrowsers = MatchInstalledBrowsers(browsers);
 
+  let versions: (2 | 3)[] = [];
   if (matchedBrowsers.length === 0) {
-    console.error("No browser found");
-    process.exit(1);
+    versions = [2, 3];
+  } else {
+    versions = MatchExtVersions(matchedBrowsers);
   }
-
-  const versions = MatchExtVersions(matchedBrowsers);
 
   DevVersionedExt(versions);
 
@@ -592,6 +600,10 @@ function DevBrowserExt(browsers: string[]) {
     if (command) {
       commands.push(command);
     }
+  }
+
+  if (matchedBrowsers.length === 0) {
+    commands.push("sleep 100000"); // TODO: A more elegant way of doing nothing?
   }
 
   const { result } = concurrently(commands);
