@@ -9,8 +9,8 @@
     "url": "https://github.com/debdut/browser-extension.git"
   },
   "scripts": {
-    "start": "ts-node-esm scripts/build.ts --dev",
-    "build": "ts-node-esm scripts/build.ts"
+    "start": "node --loader ts-node/esm scripts/build.ts --dev",
+    "build": "node --loader ts-node/esm scripts/build.ts"
   },
   "type": "module",
   "dependencies": {
